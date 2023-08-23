@@ -14,6 +14,8 @@ def validationID():
             id = int(input("\tID INVALIDA\nIntroduzca nueva ID: "))
     return id
 
+#def TO DO validate the op1 and op2
+
 def operation():
     op1 = int(input("\tOPERACION\nIntroduzca la primera cifra: "))
     op2 = int(input("Introduzca la segunda cifra: "))
@@ -43,7 +45,6 @@ def operation():
         return result,f'{op1}/{op2}={result}'
     
 def inputProcess():
-    try:
         nombre = str(input("Introduzca un nombre: "))
         while not re.match("^[a-zA-Z]+\s?[a-zA-Z]*$", nombre): #We use a expresion regular to validate the string
             nombre = str(input("Introduzca NUEVAMENTE un nombre: ")) 
@@ -55,21 +56,23 @@ def inputProcess():
             time = int(input("Introduzca NUEVAMENTE el tiempo aproximado: "))
 
         dictProcess[id] = (nombre,opString,result,time)  #we can elimate varible 'opString', only show the operation as string
-    except ValueError:
-        print('\tProceso no registrado :(\n\tValor no aceptado')
+    #except ValueError:
+     #   print('\tProceso no registrado :(\n\tValor no aceptado')
+        
 
 #/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-try:
-    process = int(input("Introduzca la cantidad de procesos a realizar: "))
-    batch = math.ceil(process/5) #we need to round out
-    print(batch)
+process = input("Introduzca la cantidad de procesos a realizar: ")
+while not re.match("^[\d]+$", process) or process == "0":
+    process = input("Introduzca NUEVAMENTE la cantidad de procesos a realizar: ")
+    
+process = int(process)
+batch = math.ceil(process/5) #we need to round out
+print(batch)
 
-    while process >= 1:
-        print(f'Proceso {process}')
-        inputProcess()
-        process = process-1
+while process >= 1:
+    print(f'Proceso {process}')
+    inputProcess()
+    process = process-1
 
-except ValueError:
-    print('\tValor no aceptado\nVuelva intentarlo despues')
 
 print(dictProcess)
