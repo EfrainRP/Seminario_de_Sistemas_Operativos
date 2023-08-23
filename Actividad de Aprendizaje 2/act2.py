@@ -1,15 +1,17 @@
 import math
+import re
 
 dictProcess = {}
 
 def validationID(): 
     id = int(input("Introduzca la ID: "))
     flag = True
+    
     while flag:    
-        if id not in dictProcess: #Verificate if the ID is repeated
+        if (id not in dictProcess) and (id > 0): #Verificate if the ID is repeated
             flag = False
         else:
-            id = input("\tID REPETIDA\nIntroduzca nueva ID: ")
+            id = int(input("\tID INVALIDA\nIntroduzca nueva ID: "))
     return id
 
 def operation():
@@ -33,22 +35,26 @@ def operation():
         try: #Exception of 0 as divisor
             result = op1/op2
         except ZeroDivisionError:
-            print("No se puede dividir entre cero :(\n\tIntente de nuevo")
+            print("No se puede dividir entre cero :(\n\tIngrese nuevos valores")
             while op2 == 0:
-                op1 = int(input("\nIntroduzca nuevamente la primera cifra: "))
-                op2 = int(input("Introduzca la segunda cifra: ")) 
+                op1 = int(input("\nIntroduzca NUEVAMENTE la primera cifra: "))
+                op2 = int(input("Introduzca NUEVAMENTE la segunda cifra: ")) 
             result = op1/op2
         return result,f'{op1}/{op2}={result}'
     
 def inputProcess():
     try:
+        nombre = str(input("Introduzca un nombre: "))
+        while not re.match("^[a-zA-Z]+\s?[a-zA-Z]*$", nombre): #We use a expresion regular to validate the string
+            nombre = str(input("Introduzca NUEVAMENTE un nombre: ")) 
+
         id = validationID()
         result,opString = operation() 
         time = int(input("Introduzca el tiempo aproximado: "))
         while time <= 0: 
             time = int(input("Introduzca NUEVAMENTE el tiempo aproximado: "))
 
-        dictProcess[id] = (opString,result,time)  #we can elimate varible 'opString', only show the operation as string
+        dictProcess[id] = (nombre,opString,result,time)  #we can elimate varible 'opString', only show the operation as string
     except ValueError:
         print('\tProceso no registrado :(\n\tValor no aceptado')
 
@@ -58,7 +64,8 @@ try:
     batch = math.ceil(process/5) #we need to round out
     print(batch)
 
-    while process > 0:
+    while process >= 1:
+        print(f'Proceso {process}')
         inputProcess()
         process = process-1
 
