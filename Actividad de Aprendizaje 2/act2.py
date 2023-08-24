@@ -4,24 +4,25 @@ import re
 dictProcess = {}
 
 def validationID(): 
-    id = int(input("Introduzca la ID: "))
-    flag = True
-    
-    while flag:    
-        if (id not in dictProcess) and (id > 0): #Verificate if the ID is repeated
-            flag = False
-        else:
-            id = int(input("\tID INVALIDA\nIntroduzca nueva ID: "))
+    id = input("Introduzca la ID: ")
+    while not re.match("^[1-9]+\d*$", id) and id not in dictProcess:#Verificate if the ID is repeated and use expresion regular for numbres from 1 to infinity
+        id = input("\tID INVALIDA\nIntroduzca nueva ID: ")
+        
     return id
 
-#def TO DO validate the op1 and op2
+def opValidator(opN,N):
+        while not re.match(r'^[+-]?\d+$', opN):  #We use a expresion regular to validate the string for real numbers
+            opN = input(f'\tCifra invalida\tIntroduzca NUEVAMENTE la #{N} cifra: ')
+        return opN
 
 def operation():
-    op1 = int(input("\tOPERACION\nIntroduzca la primera cifra: "))
-    op2 = int(input("Introduzca la segunda cifra: "))
-    op = input("Introduzca la operacion a realizar: ")    
+    op1 = input("\tOPERACION\nIntroduzca la primera cifra: ")
+    op1 = int(opValidator(op1,1))
+    op2 = input("Introduzca la segunda cifra: ")
+    op2 = int(opValidator(op2,2))
 
-    while op != '+' and op != '-' and op != '*' and op != '/': #Operators validations
+    op = input("Introduzca la operacion a realizar: ")    
+    while not re.match(r'^[+\-*/]+$', op): #We use a expresion regular to validate the string for operators
             op = input("Introduzca NUEVAMENTE la operacion a realizar: ")   
 
     if op == "+":
@@ -39,30 +40,27 @@ def operation():
         except ZeroDivisionError:
             print("No se puede dividir entre cero :(\n\tIngrese nuevos valores")
             while op2 == 0:
-                op1 = int(input("\nIntroduzca NUEVAMENTE la primera cifra: "))
-                op2 = int(input("Introduzca NUEVAMENTE la segunda cifra: ")) 
+                op2 = input("Introduzca NUEVAMENTE la segunda cifra: ")
+                op2 = int(opValidator(op2,2))
             result = op1/op2
         return result,f'{op1}/{op2}={result}'
     
 def inputProcess():
-        nombre = str(input("Introduzca un nombre: "))
+        nombre = input("Introduzca un nombre: ")
         while not re.match("^[a-zA-Z]+\s?[a-zA-Z]*$", nombre): #We use a expresion regular to validate the string
-            nombre = str(input("Introduzca NUEVAMENTE un nombre: ")) 
+            nombre = input("Introduzca NUEVAMENTE un nombre: ")
 
         id = validationID()
         result,opString = operation() 
-        time = int(input("Introduzca el tiempo aproximado: "))
-        while time <= 0: 
-            time = int(input("Introduzca NUEVAMENTE el tiempo aproximado: "))
+        time = input("Introduzca el tiempo aproximado: ")
+        while not re.match("^[1-9]+\d*$", time):  #We use a expresion regular to validate the string for time
+            time = input("Introduzca NUEVAMENTE el tiempo aproximado: ")
 
-        dictProcess[id] = (nombre,opString,result,time)  #we can elimate varible 'opString', only show the operation as string
-    #except ValueError:
-     #   print('\tProceso no registrado :(\n\tValor no aceptado')
-        
+        dictProcess[id] = (nombre,opString,result,int(time))  #we can elimate varible 'opString', only show the operation as string
 
 #/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 process = input("Introduzca la cantidad de procesos a realizar: ")
-while not re.match("^[\d]+$", process) or process == "0":
+while not re.match("^[1-9]+\d*$", process):
     process = input("Introduzca NUEVAMENTE la cantidad de procesos a realizar: ")
     
 process = int(process)
