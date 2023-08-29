@@ -95,7 +95,10 @@ class TablaInterfaz:
         # Create a function that updates the data and the table
         self.actualizar_tabla()
 
-    def displayUI(self, elementos, count, i,TT,TME,RES):
+    def displayUI(self, elementos, count, i,TT,TME,RES,long):
+        print(f'Longitud lista',long)
+        #print('Grupito: ',elementos)
+        input('Press enter')
         op = '2+2' #Examp
         self.tabla = ttk.Treeview(root, columns=("ID'", "TME", f"Programador: {programmer}", "ID", "Operación", "Resultado"), show="headings")
         self.tabla.heading("ID'", text="ID'")
@@ -111,14 +114,17 @@ class TablaInterfaz:
         self.tabla.configure(yscrollcommand=scroll_y.set)
         scroll_y.place(x=1250, y=87, height=250)
 
+        # Clears the current items from the table
+
         datos = [
                 [f'{elementos[count][0]}', f'{elementos[count][1][3]}', f"-ID usuario: \t{lis[0][i][0]}", 0, "2+2", 0],
                 [f'{elementos[count+1][0]}', 0, f"-Operación: \t{elementos[1][1][1]}", 0, "3+2", 0],
                 [f'{elementos[count+2][0]}', 0, f"-Tiempo MXE: \t{TME}", 0, "4+2", 0],
                 [f'{elementos[count+3][0]}', 0, f"-Tiempo TRA: \t{TT}", 0, "5+2", 0],
                 [f'{elementos[count+4][0]}', 0, f"-Tiempo RES: \t{RES}", 0, "6+2", 0]]
-        
-        # Clears the current items from the table
+
+
+
         for item in self.tabla.get_children():
             self.tabla.delete(item)
 
@@ -129,15 +135,14 @@ class TablaInterfaz:
         #When reaching the end of processes...
         if act == total+10:
             exit()
-        
-        return
-            
+
+
     #Function where the data is updated
     def actualizar_tabla(self):
         # Update the data in the table
         global act, lot_pend, contador_global, TT
-        
-        #Global variables to update data 
+
+        #Global variables to update data
         act += 1
         lot_pend += 1
         contador_global += 3
@@ -152,15 +157,27 @@ class TablaInterfaz:
             grupo = elementos[x:x+5]
             print("Grupo:", grupo)                #Group contains a maximum of 5 processes from the dictionary
             lis.append(grupo)                     #Add a maximum of 5 processes to the list
+            if len(lis[0]) < 5:                 #Valida que siempre haya grupos de 5
+                if 5-len(lis[0]) == 1:          #y al haber menos, los completa como espacios en "0"
+                    lis[0].append((0,(0,0)))
+                if 5-len(lis[0]) == 2:
+                    lis[0].append((0,(0,0)))
+                    lis[0].append((0,(0,0)))
+                if 5-len(lis[0]) == 3:
+                    for it in range(3):
+                        lis[0].append((0,(0,0)))
+                if 5-len(lis[0]) == 4:
+                    for it in range(4):
+                        lis[0].append((0,(0,0)))
+
+            print(f'MI lista actual es: ',lis)
             for i in range(len(lis[0])):          #Show each of the elements separately
                 print(lis[0][i])
-                print("elementos: ",elementos[count] )
-                self.displayUI(elementos,count,i,TT,TME,RES)
-                
-            count =+ 1
+                self.displayUI(lis[0],count,i,TT,TME,RES, len(lis[0]))
+            #count =+ 1
             lis.clear()                           #The list is cleared and then it adds 5 different processes.
 
-        
+
         # Schedule the next update after 5 seconds in the table
         self.root.after(5000, self.actualizar_tabla)
         time.sleep(1)
@@ -179,9 +196,9 @@ class TablaInterfaz:
         datos.pop(4)
         datos.insert(4,[0, 0, f"-Tiempo RES: \t{TME-TT}", 1, "5+2", 0],)
 '''
-        
 
-if __name__ == "__main__":   
+
+if __name__ == "__main__":
     '''
     dictProcess = {}
     process = input("Introduzca la cantidad de procesos a realizar: ")
@@ -200,8 +217,8 @@ if __name__ == "__main__":
     input('Press enter')
     '''
     #Example Dict
-    dic = {1:('Yeremy','1+1',2,1), 2:('Gera','2+2',4,1),3:('Lois','3+3',27,1),4:('Jared','4+4',7,1),5:('Carmen','5+5',41,1),
-    6:('Yeremy','1+1',2,1),7:('Yeremy','1+1',2,1),}
+    dic = {1:('Yeremy','1+1',2,1), 2:('Gera','2+2',4,1), 3:('Lupi','3+3',4,1),4:('Lupi','3+3',4,1),
+    5:('Lupi','3+3',4,1),6:('Lupi','3+3',4,1),7:('Lupi','3+3',4,1),}
 
     lis = []             #List of running processes
     total = 2            #Total processes
@@ -211,6 +228,6 @@ if __name__ == "__main__":
     TT = 0               #Time elapsed
     programmer = ''      #Name var
 
-    root = tk.Tk() 
+    root = tk.Tk()
     app = TablaInterfaz(root)
     root.mainloop()
