@@ -95,9 +95,12 @@ class TablaInterfaz:
         # Create a function that updates the data and the table
         self.actualizar_tabla()
 
-    def displayUI(self, elementos, count, i,TT,TME,RES,long):
+    def displayUI(self, elementos, count, i,long):
+        global actual, TT
+
         print(f'Longitud lista',long)
         #print('Grupito: ',elementos)
+        print(f'Mi elemento: {elementos[actual][1][3]}')
         input('Press enter')
         op = '2+2' #Examp
         self.tabla = ttk.Treeview(root, columns=("ID'", "TME", f"Programador: {programmer}", "ID", "Operación", "Resultado"), show="headings")
@@ -117,11 +120,11 @@ class TablaInterfaz:
         # Clears the current items from the table
 
         datos = [
-                [f'{elementos[count][0]}', f'{elementos[count][1][3]}', f"-ID usuario: \t{lis[0][i][0]}", 0, "2+2", 0],
-                [f'{elementos[count+1][0]}', 0, f"-Operación: \t{elementos[1][1][1]}", 0, "3+2", 0],
-                [f'{elementos[count+2][0]}', 0, f"-Tiempo MXE: \t{TME}", 0, "4+2", 0],
-                [f'{elementos[count+3][0]}', 0, f"-Tiempo TRA: \t{TT}", 0, "5+2", 0],
-                [f'{elementos[count+4][0]}', 0, f"-Tiempo RES: \t{RES}", 0, "6+2", 0]]
+                [f'{elementos[count][0]}', f'{elementos[count][1][3]}', f"-ID usuario: \t{elementos[actual][0]}", 0, "2+2", 0],
+                [f'{elementos[count+1][0]}', f'{elementos[count+1][1][3]}', f"-Operación: \t{elementos[actual][1][1]}", 0, "3+2", 0],
+                [f'{elementos[count+2][0]}', f'{elementos[count+2][1][3]}', f"-Tiempo MXE: \t{elementos[actual][1][3]}", 0, "4+2", 0],
+                [f'{elementos[count+3][0]}', f'{elementos[count+3][1][3]}', f"-Tiempo TRA: \t{TT}", 0, "5+2", 0],
+                [f'{elementos[count+4][0]}', f'{elementos[count+4][1][3]}', f"-Tiempo RES: \t{elementos[actual][1][3]-1}", 0, "6+2", 0]]
 
 
 
@@ -135,6 +138,10 @@ class TablaInterfaz:
         #When reaching the end of processes...
         if act == total+10:
             exit()
+        if actual == 4:   #Contador de procesos en ejecución
+            actual = 0
+        else:
+            actual += 1
 
 
     #Function where the data is updated
@@ -146,9 +153,7 @@ class TablaInterfaz:
         act += 1
         lot_pend += 1
         contador_global += 3
-        TT +=1
-        TME = 5
-        RES = TME
+
         #Dictionary items grouped by 5
         elementos = list(dic.items())
         total_elementos = len(elementos)
@@ -159,21 +164,21 @@ class TablaInterfaz:
             lis.append(grupo)                     #Add a maximum of 5 processes to the list
             if len(lis[0]) < 5:                 #Valida que siempre haya grupos de 5
                 if 5-len(lis[0]) == 1:          #y al haber menos, los completa como espacios en "0"
-                    lis[0].append((0,(0,0)))
+                    lis[0].append((0,(0,0,0,0)))
                 if 5-len(lis[0]) == 2:
-                    lis[0].append((0,(0,0)))
-                    lis[0].append((0,(0,0)))
+                    lis[0].append((0,(0,0,0,0)))
+                    lis[0].append((0,(0,0,0,0)))
                 if 5-len(lis[0]) == 3:
                     for it in range(3):
-                        lis[0].append((0,(0,0)))
+                        lis[0].append((0,(0,0,0,0)))
                 if 5-len(lis[0]) == 4:
                     for it in range(4):
-                        lis[0].append((0,(0,0)))
+                        lis[0].append((0,(0,0,0,0)))
 
             print(f'MI lista actual es: ',lis)
             for i in range(len(lis[0])):          #Show each of the elements separately
                 print(lis[0][i])
-                self.displayUI(lis[0],count,i,TT,TME,RES, len(lis[0]))
+                self.displayUI(lis[0],count,i,len(lis[0]))
             #count =+ 1
             lis.clear()                           #The list is cleared and then it adds 5 different processes.
 
@@ -217,15 +222,16 @@ if __name__ == "__main__":
     input('Press enter')
     '''
     #Example Dict
-    dic = {1:('Yeremy','1+1',2,1), 2:('Gera','2+2',4,1), 3:('Lupi','3+3',4,1),4:('Lupi','3+3',4,1),
-    5:('Lupi','3+3',4,1),6:('Lupi','3+3',4,1),7:('Lupi','3+3',4,1),}
+    dic = {1:('Yeremy','1+1',2,11), 2:('Gera','2+2',4,22), 3:('Lupi','3+3',4,33),4:('Lupi','4+4',4,44),
+    5:('Lupi','5+5',4,55),6:('Lupi','6+6',4,66),7:('Lupi','7+7',4,77),}
 
     lis = []             #List of running processes
     total = 2            #Total processes
     act = 0              #Current process counter
     lot_pend =3          #Pending batch counter
     contador_global = 0  #Program timer
-    TT = 0               #Time elapsed
+    actual = 0
+    TT = 1               #Time elapsed
     programmer = ''      #Name var
 
     root = tk.Tk()
