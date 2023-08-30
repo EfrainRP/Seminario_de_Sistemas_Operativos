@@ -2,7 +2,7 @@ import math
 import re
 import tkinter as tk
 from tkinter import ttk
-import time
+import threading
 
 def validationID():
     id = input("Introduzca la ID: ")
@@ -23,7 +23,7 @@ def operation():
     op2 = int(opValidator(op2,2))
 
     op = input("Introduzca la operacion a realizar: ")
-    while not re.match(r'^[+\-*/]+$', op): #We use a expresion regular to validate the string for operators
+    while not re.match(r'^[+\-*/%]+$', op): #We use a expresion regular to validate the string for operators
             op = input("Introduzca NUEVAMENTE la operacion a realizar: ")
 
     if op == "+":
@@ -35,7 +35,7 @@ def operation():
     elif op == "*":
         result = op1*op2
         return result,f'{op1}*{op2}={result}'
-    else: # / (division)
+    elif op == "/": # / (division)
         try: #Exception of 0 as divisor
             result = op1/op2
         except ZeroDivisionError:
@@ -45,6 +45,16 @@ def operation():
                 op2 = int(opValidator(op2,2))
             result = op1/op2
         return result,f'{op1}/{op2}={result}'
+    elif op =="%"
+        try: #Exception of 0 as divisor
+            result = op1%op2
+        except ZeroDivisionError:
+            print("No se puede dividir entre cero :(\n\tIngrese nuevos valores")
+            while op2 == 0:
+                op2 = input("Introduzca NUEVAMENTE la segunda cifra: ")
+                op2 = int(opValidator(op2,2))
+            result = op1%op2
+        return result,f'{op1}%{op2}={result}'
 
 def inputProcess():
         nombre = input("Introduzca un nombre: ")
@@ -107,7 +117,6 @@ class TablaInterfaz:
         global TT,contador_global,lot_pend
         #print('Grupito: ',elementos)
         print(f'Mi elemento: {elementos[actual][1][0]}')
-        input('')
         #Actualiza el N° Lotes pendientes
         self.lotes_pendientes.set(f"-No. lotes pendientes: {lot_pend}")
         self.tabla = ttk.Treeview(root, columns=("ID'", "TME", f"Programador: {elementos[actual][1][0]}", "ID", "Operación", "Resultado"), show="headings")
@@ -126,15 +135,12 @@ class TablaInterfaz:
 
         # Clears the current items from the table
 
-
-
         datos = [
                 [f'{elementos[count][0]}', f'{elementos[count][1][3]}', f"-ID usuario: \t{elementos[actual][0]}", 0, "2+2", 0],
                 [f'{elementos[count+1][0]}', f'{elementos[count+1][1][3]}', f"-Operación: \t{elementos[actual][1][1]}", 0, "3+2", 0],
                 [f'{elementos[count+2][0]}', f'{elementos[count+2][1][3]}', f"-Tiempo MXE: \t{elementos[actual][1][3]}", 0, "4+2", 0],
                 [f'{elementos[count+3][0]}', f'{elementos[count+3][1][3]}', f"-Tiempo TRA: \t{TT}", 0, "5+2", 0],
                 [f'{elementos[count+4][0]}', f'{elementos[count+4][1][3]}', f"-Tiempo RES: \t{elementos[actual][1][3]-1}", 0, "6+2", 0]]
-        input('')
 
         for i in range(elementos[actual][1][3]):  #Actualiza el tiempo TRA Y RES
             self.update([f'{elementos[count][0]}', f'{elementos[count][1][3]}', f"-ID usuario: \t{elementos[actual][0]}", 0, "2+2", 0],
@@ -143,6 +149,8 @@ class TablaInterfaz:
             [f'{elementos[count+3][0]}', f'{elementos[count+3][1][3]}', f"-Tiempo TRA: \t{TT}", 0, "5+2", 0],
             [f'{elementos[count+4][0]}', f'{elementos[count+4][1][3]}', f"-Tiempo RES: \t{elementos[actual][1][3]-TT}", 0, "6+2", 0])
             TT += 1
+            #self.root.after(10000)
+            #os.system("pause")
             input('Press to update')
 
         #Actualiza el contador global por cada proceso en ejecucion
@@ -180,18 +188,8 @@ class TablaInterfaz:
             grupo = elementos[x:x+5]
             print("Grupo:", grupo)                #Group contains a maximum of 5 processes from the dictionary
             lis.append(grupo)                     #Add a maximum of 5 processes to the list
-            if len(lis[0]) < 5:                 #Valida que siempre haya grupos de 5
-                if 5-len(lis[0]) == 1:          #y al haber menos, los completa como espacios en "0"
-                    lis[0].append((0,(0,0,0,0)))
-                if 5-len(lis[0]) == 2:
-                    lis[0].append((0,(0,0,0,0)))
-                    lis[0].append((0,(0,0,0,0)))
-                if 5-len(lis[0]) == 3:
-                    for it in range(3):
-                        lis[0].append((0,(0,0,0,0)))
-                if 5-len(lis[0]) == 4:
-                    for it in range(4):
-                        lis[0].append((0,(0,0,0,0)))
+            while len(lis[0]) < 5:                 #Valida que siempre haya grupos de 5
+                lis[0].append((0,(0,0,0,0)))#y al haber menos, los completa como espacios en "0"
             print(f'MI lista actual es: ',lis)
             for i in range(len(lis[0])):          #Show each of the elements separately
                 print(lis[0][i])
@@ -204,8 +202,8 @@ class TablaInterfaz:
             lis.clear()                           #The list is cleared and then it adds 5 different processes.
 
         #Updat table 
-        self.root.after(5000, self.actualizar_tabla)
-        time.sleep(1)
+        #self.root.after(5000, self.actualizar_tabla)
+        
         #Add a line to the End of batch table
         datos.append(["--", "--", f"-Fin Lote: {1}", "--", "----", "--"],)
         #Add a new row to the table
