@@ -95,18 +95,25 @@ class TablaInterfaz:
         # Create a function that updates the data and the table
         self.actualizar_tabla()
 
-    def displayUI(self, elementos, count, i,long):
-        global actual, TT
+    def update(self,f1,f2,f3,f4,f5):   #Actualiza los tiempos de TT y RES 
+        datos = [f1,f2,f3,f4,f5]
+        for item in self.tabla.get_children():
+            self.tabla.delete(item)
+                # Insert the new data into the table
+        for fila in datos:
+            self.tabla.insert("", "end", values=fila)
 
-        print(f'Longitud lista',long)
+    def displayUI(self, elementos, count, actual):
+        global TT,contador_global,lot_pend
         #print('Grupito: ',elementos)
-        print(f'Mi elemento: {elementos[actual][1][3]}')
-        input('Press enter')
-        op = '2+2' #Examp
-        self.tabla = ttk.Treeview(root, columns=("ID'", "TME", f"Programador: {programmer}", "ID", "Operación", "Resultado"), show="headings")
+        print(f'Mi elemento: {elementos[actual][1][0]}')
+        input('')
+        #Actualiza el N° Lotes pendientes
+        self.lotes_pendientes.set(f"-No. lotes pendientes: {lot_pend}")
+        self.tabla = ttk.Treeview(root, columns=("ID'", "TME", f"Programador: {elementos[actual][1][0]}", "ID", "Operación", "Resultado"), show="headings")
         self.tabla.heading("ID'", text="ID'")
         self.tabla.heading("TME", text="TME")
-        self.tabla.heading(f"Programador: {programmer}", text=f"Programador: {programmer}")
+        self.tabla.heading(f"Programador: {elementos[actual][1][0]}", text=f"Programador: {elementos[actual][1][0]}")
         self.tabla.heading("ID", text="ID")
         self.tabla.heading("Operación", text="Operación")
         self.tabla.heading("Resultado", text="Resultado")
@@ -119,46 +126,57 @@ class TablaInterfaz:
 
         # Clears the current items from the table
 
+
+
         datos = [
                 [f'{elementos[count][0]}', f'{elementos[count][1][3]}', f"-ID usuario: \t{elementos[actual][0]}", 0, "2+2", 0],
                 [f'{elementos[count+1][0]}', f'{elementos[count+1][1][3]}', f"-Operación: \t{elementos[actual][1][1]}", 0, "3+2", 0],
                 [f'{elementos[count+2][0]}', f'{elementos[count+2][1][3]}', f"-Tiempo MXE: \t{elementos[actual][1][3]}", 0, "4+2", 0],
                 [f'{elementos[count+3][0]}', f'{elementos[count+3][1][3]}', f"-Tiempo TRA: \t{TT}", 0, "5+2", 0],
                 [f'{elementos[count+4][0]}', f'{elementos[count+4][1][3]}', f"-Tiempo RES: \t{elementos[actual][1][3]-1}", 0, "6+2", 0]]
+        input('')
 
+        for i in range(elementos[actual][1][3]):  #Actualiza el tiempo TRA Y RES
+            self.update([f'{elementos[count][0]}', f'{elementos[count][1][3]}', f"-ID usuario: \t{elementos[actual][0]}", 0, "2+2", 0],
+            [f'{elementos[count+1][0]}', f'{elementos[count+1][1][3]}', f"-Operación: \t{elementos[actual][1][1]}", 0, "3+2", 0],
+            [f'{elementos[count+2][0]}', f'{elementos[count+2][1][3]}', f"-Tiempo MXE: \t{elementos[actual][1][3]}", 0, "4+2", 0],
+            [f'{elementos[count+3][0]}', f'{elementos[count+3][1][3]}', f"-Tiempo TRA: \t{TT}", 0, "5+2", 0],
+            [f'{elementos[count+4][0]}', f'{elementos[count+4][1][3]}', f"-Tiempo RES: \t{elementos[actual][1][3]-TT}", 0, "6+2", 0])
+            TT += 1
+            input('Press to update')
 
+        #Actualiza el contador global por cada proceso en ejecucion
+        contador_global = contador_global+elementos[actual][1][3]
+        self.contador.set(f"Contador: {contador_global}")
 
-        for item in self.tabla.get_children():
-            self.tabla.delete(item)
+        datos.append(["--", "--", "-------------", 10, "10+10", 20],)
 
+        #datos.pop(3)
+        #datos.insert(3,[0, 0, f"-Tiempo TRA: \t{TT}", 1, "5+2", 0],)
+
+        #update the remaining row
+        #datos.pop(4)
+        #datos.insert(4,[0, 0, f"-Tiempo RES: \t{elementos[actual][1][3]-TT}", 1, "5+2", 0],)
+
+        #for item in self.tabla.get_children():
+        #    self.tabla.delete(item)
         # Insert the new data into the table
-        for fila in datos:
-            self.tabla.insert("", "end", values=fila)
-
-        #When reaching the end of processes...
-        if act == total+10:
-            exit()
-        if actual == 4:   #Contador de procesos en ejecución
-            actual = 0
-        else:
-            actual += 1
-
-
+        #for fila in datos:
+        #    self.tabla.insert("", "end", values=fila)
     #Function where the data is updated
     def actualizar_tabla(self):
-        # Update the data in the table
-        global act, lot_pend, contador_global, TT
-
         #Global variables to update data
-        act += 1
-        lot_pend += 1
-        contador_global += 3
-
+        global lot_pend,TT
+        #Variable to update ejecution process
+        actual = 0
+        TT = 1
+        lis = [] #Ejecution process
         #Dictionary items grouped by 5
         elementos = list(dic.items())
         total_elementos = len(elementos)
         count = 0
         for x in range(0, total_elementos, 5):
+            lot_pend -= 1
             grupo = elementos[x:x+5]
             print("Grupo:", grupo)                #Group contains a maximum of 5 processes from the dictionary
             lis.append(grupo)                     #Add a maximum of 5 processes to the list
@@ -174,34 +192,27 @@ class TablaInterfaz:
                 if 5-len(lis[0]) == 4:
                     for it in range(4):
                         lis[0].append((0,(0,0,0,0)))
-
             print(f'MI lista actual es: ',lis)
             for i in range(len(lis[0])):          #Show each of the elements separately
                 print(lis[0][i])
-                self.displayUI(lis[0],count,i,len(lis[0]))
-            #count =+ 1
+                self.displayUI(lis[0],count,actual)
+                if actual == 4:   #Contador de procesos en ejecución
+                    actual = 0    #Reinicia el contador en ejecucion por cada grupo
+                else:
+                    actual += 1
+                TT = 1           #Reinicia el contador de transcurrido por cada proceso en ejecucion
             lis.clear()                           #The list is cleared and then it adds 5 different processes.
 
-
-        # Schedule the next update after 5 seconds in the table
+        #Updat table 
         self.root.after(5000, self.actualizar_tabla)
         time.sleep(1)
-        #Update N. batch pending
-        self.lotes_pendientes.set(f"-No. lotes pendientes: {lot_pend}")
-        #Update global counter
-        self.contador.set(f"Contador: {contador_global}")
         #Add a line to the End of batch table
-        '''datos.append(["--", "--", f"-Fin Lote: {1}", "--", "----", "--"],)
+        datos.append(["--", "--", f"-Fin Lote: {1}", "--", "----", "--"],)
         #Add a new row to the table
         datos.append(["--", "--", "-------------", 10, "10+10", 20],)
-        #Updates the ELAPSED row
-        datos.pop(3)
-        datos.insert(3,[0, 0, f"-Tiempo TRA: \t{TT}", 1, "5+2", 0],)
-        #update the remaining row
-        datos.pop(4)
-        datos.insert(4,[0, 0, f"-Tiempo RES: \t{TME-TT}", 1, "5+2", 0],)
-'''
-
+        #When reaching the end of processes...
+        if lot_pend == 0:
+            exit()
 
 if __name__ == "__main__":
     '''
@@ -222,18 +233,16 @@ if __name__ == "__main__":
     input('Press enter')
     '''
     #Example Dict
-    dic = {1:('Yeremy','1+1',2,11), 2:('Gera','2+2',4,22), 3:('Lupi','3+3',4,33),4:('Lupi','4+4',4,44),
-    5:('Lupi','5+5',4,55),6:('Lupi','6+6',4,66),7:('Lupi','7+7',4,77),}
+    dic = {1:('Yeremy','1+1',2,4), 2:('Gera','2+2',4,22), 3:('Lupi','3+3',4,33),4:('Lupi','4+4',4,44),
+    5:('Dadan','5+5',4,55),6:('Armando','6+6',4,66),7:('Uriel','7+7',4,77),}
 
-    lis = []             #List of running processes
-    total = 2            #Total processes
-    act = 0              #Current process counter
-    lot_pend =3          #Pending batch counter
-    contador_global = 0  #Program timer
-    actual = 0
-    TT = 1               #Time elapsed
-    programmer = ''      #Name var
+    batch = math.ceil(7/5)
+
+    lot_pend = batch          #Pending batch counter
+    contador_global = 0      #Program timer
+    programmer = ''          #Table variable
 
     root = tk.Tk()
     app = TablaInterfaz(root)
     root.mainloop()
+
