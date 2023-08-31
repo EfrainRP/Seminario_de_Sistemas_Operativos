@@ -141,8 +141,8 @@ def console(dic,batch):
             for terminados in lis:   #Muestra cada uno de los procesos terminadt\tos
                 idString = resize_string(' ' + str(terminados[0]),18)
                 operationString = resize_string(terminados[1][1],32)
-                resultString = resize_string(' ' +str(terminados[1][2]),14)
-                NL_String = resize_string(' ' +str(terminados[1][4]),4)
+                resultString = resize_string(' ' + str(terminados[1][2]),14)
+                NL_String = resize_string(' ' + str(terminados[1][4]),4)
                 imprimir_en_posicion(fila_term, 1, f'{idString}{operationString}{resultString}{NL_String}')
                 fila_term += 1
         lotes -= 1
@@ -181,6 +181,10 @@ def main():
         count_batch += 1
         count_process += 1
     print(dictProcess)
+    '''x =0
+    for i in dictProcess:
+        x += dictProcess[i][3]
+    print('tiempo: ',x)'''
 
     input('Press enter')
     os.system('cls')
