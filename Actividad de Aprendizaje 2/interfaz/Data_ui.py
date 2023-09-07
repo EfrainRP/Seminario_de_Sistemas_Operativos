@@ -19,10 +19,18 @@ from PySide6.QtWidgets import (QApplication, QComboBox, QDialog, QHBoxLayout,
     QLabel, QLineEdit, QPushButton, QSizePolicy,
     QSpinBox, QSplitter, QWidget)
 
+from em_window import *
+from DataTable_ui import *
 import re
 
 class Ui_Data(object):
-    def setupUi(self, Data, process):
+    def __init__(self, process):
+        self.dictProcess = {} #Dictionary to save data
+        self.count_process = process
+        self.actual_batch = 1             #Actual batch running
+        self.count_batch = 1              #Batch count
+    
+    def setupUi(self, Data):
         if not Data.objectName():
             Data.setObjectName(u"Data")
         Data.resize(221, 253)
@@ -32,12 +40,6 @@ class Ui_Data(object):
         self.pushButton = QPushButton(Data)
         self.pushButton.setObjectName(u"pushButton")
         self.pushButton.setGeometry(QRect(70, 220, 75, 24))
-        self.label_7 = QLabel(Data)
-        self.label_7.setObjectName(u"label_7")
-        self.label_7.setEnabled(True)
-        self.label_7.setGeometry(QRect(8, 189, 201, 31))
-        self.label_7.setLayoutDirection(Qt.LeftToRight)
-        self.label_7.setAutoFillBackground(False)
         self.splitter_6 = QSplitter(Data)
         self.splitter_6.setObjectName(u"splitter_6")
         self.splitter_6.setGeometry(QRect(20, 21, 177, 161))
@@ -130,13 +132,12 @@ class Ui_Data(object):
 
         self.pushButton.clicked.connect(self.inputDataProcess)
 
-
+        self.windowData = QWidget()
     # setupUi
 
     def retranslateUi(self, Data):
         Data.setWindowTitle(QCoreApplication.translate("Data", u"Data", None))
         self.pushButton.setText(QCoreApplication.translate("Data", u"Enter", None))
-        self.label_7.setText("")
         self.label.setText(QCoreApplication.translate("Data", u"Nombre", None))
         self.label_2.setText(QCoreApplication.translate("Data", u"ID:", None))
         self.label_3.setText(QCoreApplication.translate("Data", u"Cifra #1: ", None))
@@ -151,20 +152,52 @@ class Ui_Data(object):
         self.comboBox.setCurrentText(QCoreApplication.translate("Data", u"+", None))
         self.label_6.setText(QCoreApplication.translate("Data", u"Tiempo Aprox.:", None))
     # retranslateUi
+    def clearInputs(self):
+        self.lineEdit.clear()
+        self.spinBox_2.setValue(0)
+        self.spinBox_3.setValue(0)
+        self.spinBox_4.setValue(0)
+        self.comboBox.setCurrentIndex(0)
+        self.spinBox.setValue(1)
 
     def inputDataProcess(self):
         nombre = self.lineEdit.text()
-        '''while not re.match("^[a-zA-Z]+\s?[a-zA-Z]*$", nombre): #We use a expresion regular to validate the string
-            nombre = input("\tIntroduzca NUEVAMENTE un nombre: ")'''
+        if not re.match("^[a-zA-Z]+\s?[a-zA-Z]*$", nombre): #We use a expresion regular to validate the string
+            VentanaEmergente("\tNombre NO valido\n           Ingrese caracter validos").exec_()
+            self.clearInputs()
+            return
         id = self.spinBox_2.value()
+        if id in self.dictProcess:
+            VentanaEmergente("\tID repetido\n    Introduzca NUEVAMENTE la ID").exec_()
+            return
         op1 = self.spinBox_3.value()
         op2 = self.spinBox_4.value()
-        result,opString = self.operation(op1,op2,self.comboBox.currentText())
+        operator = self.comboBox.currentText()
+        
+        if op2 == 0 and (operator == "/" or operator == "%"):
+            VentanaEmergente("     No se puede dividir entre cero      :(\n    Introduzca NUEVAMENTE la segunda cifra").exec_()
+            return
+        else:
+            result,opString = self.operation(op1,op2,operator)
+
         time = self.spinBox.value()
-        print(nombre,id,opString,result,time)
-        '''dictProcess= {}
-        dictProcess[id] = (nombre,opString,result,int(time))
-        print(dictProcess)'''
+        if self.count_batch == 5:
+            self.actual_batch += 1
+            self.count_batch = 0
+        self.count_batch += 1
+
+        self.count_process -= 1
+
+        self.dictProcess[id] = (nombre,opString,result,int(time),self.actual_batch)  #we can elimate varible 'opString', only show the operation as string
+        print(self.dictProcess)
+
+        if self.count_process < 1 : #Registro todos los procesos anotados
+            self.ui = Ui_DataTable(self.dictProcess)
+            self.ui.setupUi(self.windowData)
+            self.windowData.show()
+            return 
+        
+        self.clearInputs()
 
     def operation(self, op1,op2, op):
         if op == "+":
@@ -177,17 +210,9 @@ class Ui_Data(object):
             result = op1*op2
             return result,f'{op1} * {op2}'
         elif op == "/": # / (division)
-            while op2 == 0:
-                self.label_7.text("No se puede dividir entre cero :(\nIntroduzca NUEVAMENTE la segunda cifra")
-                op2 = self.spinBox_4.value()
-            self.label_7.text("") 
             result = op1/op2
             return result,f'{op1} / {op2}'
         elif op =="%":
-            while op2 == 0:
-                self.label_7.text("No se puede dividir entre cero :(\nIntroduzca NUEVAMENTE la segunda cifra")
-                op2 = self.spinBox_4.value()
-            self.label_7.text("") 
             result = op1%op2
             return result,f'{op1} % {op2}'
 

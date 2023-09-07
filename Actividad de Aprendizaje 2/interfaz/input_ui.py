@@ -74,11 +74,8 @@ class Ui_inputProcess(object):
     # retranslateUi
 
     def clicked_button1(self):
-        self.ui = Ui_Data()
         process = self.process.value()
         print(process)
-        self.ui.setupUi(self.windowData,process)
+        self.ui = Ui_Data(process)
+        self.ui.setupUi(self.windowData)
         self.windowData.show()
-
-    def exit(self, event):
-        self.windowData.close()

@@ -10,8 +10,6 @@ from PySide6.QtWidgets import (QApplication, QLabel, QMainWindow, QSizePolicy,
     QSpinBox, QStatusBar, QWidget)
 
 from input_ui import Ui_inputProcess
-from Data_ui import Ui_Data
-from TableData import Ui_TableData
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
