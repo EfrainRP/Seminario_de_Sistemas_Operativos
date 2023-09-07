@@ -1,9 +1,6 @@
-import math
-import re
+import math,re,time,random,keyboard,os
 from queue import Queue
-import time, os
-import random
-
+#Process validation
 def opValidator():
         opN = random.randint(-9999, 9999)
         return opN
@@ -13,7 +10,6 @@ def operation():
     op2 = int(opValidator())
 
     operador = ['+', '-', '*', '/', '%']
-    
     op = random.choice(operador)
     
     if op == "+":
@@ -26,31 +22,21 @@ def operation():
         result = op1*op2
         return result,f'{op1} * {op2}'
     elif op == "/": # / (division)
-        ''' try: #Exception of 0 as divisor
-            result = op1/op2
-        except ZeroDivisionError:
-            print("No se puede dividir entre cero :(\n\tIngrese nuevos valores")
-        '''
         while op2 == 0:
             op2 = int(opValidator())
         result = op1/op2
         return result,f'{op1} / {op2}'
     elif op =="%":
-        ''' try: #Exception of 0 as divisor
-            result = op1%op2
-        except ZeroDivisionError:
-            print("No se puede dividir entre cero :(\n\tIngrese nuevos valores")
-        '''
         while op2 == 0:
             op2 = int(opValidator())
         result = op1%op2
         return result,f'{op1} % {op2}'
 
 def inputProcess(dictProcess,actual_batch,id):
-        time = random.randint(6, 18) 
+        time = random.randint(20, 40) 
         result,opString = operation()
 
-        dictProcess[id] = (opString,round(result,4),int(time),actual_batch)  #we can elimate varible 'opString', only show the operation as string
+        dictProcess[id] = [0,opString,round(result,4),int(time),actual_batch]  #we can elimate varible 'opString', only show the operation as string
 
 #---------------------------------------------------------------------------------------------------------
 #CONSOLE
@@ -86,59 +72,75 @@ def console(dic,batch):
         grupito = cola.get()
         #-------------------------------------------------------------------------------
         while len(grupito) != 0:               #Se muestra cada elemento del grupo
+            interrupted = False
             imprimir_en_posicion(0, 80, f' < N° Lotes Pendientes: {lotes-1} > ')
             imprimir_en_posicion(0, 0, '-------------------------- < Lote actual > -------------------------')
-            imprimir_en_posicion(2, 0, '>ID\t>TME')
+            imprimir_en_posicion(2, 0, '>ID\t>TME\t>TT')
             ejecucion = grupito.pop(0)
             limpiar(3,7)    #Limpia las filas en actuales
             fila = 3
             for element in grupito:       #Actualiza la actual cola
-                imprimir_en_posicion(fila, 0,f' {element[0]}\t  {element[1][3]}')
+                imprimir_en_posicion(fila, 0,f' {element[0]}\t  {element[1][3]}\t  {element[1][0]}')
                 fila += 1
             '''if len(grupito) > 3: #Interrupcion para ver cuantos entran en el grupito (entran 4)
                 input(' ')'''
             #--------------------------------------------------------------------------------------------------------
             limpiar(8,13)   #Limpia las filas en ejecucion
             imprimir_en_posicion(8, 0, '-------------------- < Proceso en ejecución > --------------------')
-            imprimir_en_posicion(9, 0, f'>Programador: {ejecucion[1][0]}')
+            imprimir_en_posicion(9, 0, f'                                       ')
             imprimir_en_posicion(10, 0, f'-ID: {ejecucion[0]}')
             imprimir_en_posicion(11, 0, f'-Operacion-> {ejecucion[1][1]}')
-            imprimir_en_posicion(12, 0, f'-Tiempo MXE: {ejecucion[1][3]}')
-            TT = 0
-            while TT < ejecucion[1][3]:
-                TT += 1
-                imprimir_en_posicion(13, 0, f'-Tiempo TRA: {TT}')
+            imprimir_en_posicion(12, 0, f'-Tiempo MXE: {ejecucion[1][2]}')
+            #TT = ejecucion[1][0]
+            imprimir_en_posicion(13, 0, '                 ')  #Limpia antes de mostrar
+            while  ejecucion[1][0] < ejecucion[1][3]:
+                ejecucion[1][0] += 1
+                imprimir_en_posicion(13, 0, f'-Tiempo TRA: {ejecucion[1][0]}')
                 imprimir_en_posicion(14, 0, '                 ')  #Limpia antes de mostrar
-                imprimir_en_posicion(14, 0, f'-Tiempo RES: {ejecucion[1][3]-TT}')
+                imprimir_en_posicion(14, 0, f'-Tiempo RES: {ejecucion[1][3]-ejecucion[1][0]}')
                 contador += 1
                 imprimir_en_posicion(8, 80, f' < Contador: {contador} >')  #Muestra el contador
-                time.sleep(1)
-            lis.append(ejecucion)
+                time.sleep(0.1)
+                if keyboard.is_pressed('i'):  # Verifica si la tecla "e" ha sido presionada
+                    #imprimir_en_posicion(14, 80, f' < INTERRUPCION >')  #Muestra el contado
+                    grupito.append(ejecucion)
+                    interrupted = True
+                    break
+                if keyboard.is_pressed('e'):  # Verifica si la tecla "e" ha sido presionada
+                    #imprimir_en_posicion(14, 80, f' < ERROR >')  #Muestra el contador
+                    ejecucion[1][2] = 'Error'
+                    break
+                if keyboard.is_pressed('p'):  # Verifica si la tecla "p" ha sido presionada
+                    imprimir_en_posicion(16, 80, '                 ')  #Limpia antes de mostrar
+                    imprimir_en_posicion(14, 80, f' < PAUSA >')  #Muestra el contador
+                    keyboard.wait("c") #Espera una "c"
+                    imprimir_en_posicion(16, 80, f' < CONTINUANDO >')  #Muestra el contador
+                    imprimir_en_posicion(14, 80, '                 ')  #Limpia antes de mostrar
+                
+            if not interrupted:      #Si no se interrumpio 
+                lis.append(ejecucion)
+                imprimir_en_posicion(16, 1, '------------------------- < Terminados > --------------------------')
+                imprimir_en_posicion(17, 1, '>ID\t\t>Operacion\t\t\t>Resultado\t>NL')
+                fila_term = 18
+                for terminados in lis:   #Muestra cada uno de los procesos terminadt\tos
+                    idString = resize_string(' ' + str(terminados[0]),18)
+                    operationString = resize_string(terminados[1][1],32)
+                    resultString = resize_string(' ' + str(terminados[1][2]),14)
+                    NL_String = resize_string(' ' + str(terminados[1][4]),4)
+                    imprimir_en_posicion(fila_term, 1, f'{idString}{operationString}{resultString}{NL_String}')
+                    fila_term += 1
+            else:                    #Si hay interrupcion 
+                continue
             #limpiar(16,100) #Limpia los terminados
-            imprimir_en_posicion(16, 1, '------------------------- < Terminados > --------------------------')
-            imprimir_en_posicion(17, 1, '>ID\t\t>Operacion\t\t\t>Resultado\t>NL')
-            fila_term = 18
-            for terminados in lis:   #Muestra cada uno de los procesos terminadt\tos
-                idString = resize_string(' ' + str(terminados[0]),18)
-                operationString = resize_string(terminados[1][1],32)
-                resultString = resize_string(' ' + str(terminados[1][2]),14)
-                NL_String = resize_string(' ' + str(terminados[1][4]),4)
-                imprimir_en_posicion(fila_term, 1, f'{idString}{operationString}{resultString}{NL_String}')
-                fila_term += 1
         lotes -= 1
         limpiar(9,15)   #Limpia las filas en ejecucion al terminar el programa
         limpiar(2,7)    #Limpia las filas en actuales
         imprimir_en_posicion(fila_term, 1, ' ') #"Posiciona el cursor" para que se imprima al final del programa
         
-
+    # Registra una función de devolución de llamada para eventos de teclado
+  
 def main():
     os.system('cls')
-    '''
-    dictProcess = {1:('Yeremy','122+122',144,4,1), 2:('Gera','2+2',4,4,1), 3:('Lupi','8-3',5,4,1),4:('Lupi','4x2',8,4,1),
-        5:('Dadan','10/2',1,4,1),6:('Armando','12%2',0,4,2),7:('Uriel','7+7',14,4,2),8:('Violeta','8+8',16,4,2),
-        9:('Juan','11-5',6,4,2),10:('Raul','10+10',20,4,2),11:('Fabiola','8+8',16,4,3),12:('Sara','5+4',9,4,3),}
-    process = 12
-    '''
     dictProcess = {}
     process = input("Introduzca la cantidad de procesos a realizar: ")
     while not re.match("^[1-9]+\d*$", process):
@@ -161,7 +163,6 @@ def main():
         count_process += 1
         id += 1
     print(dictProcess)
-    input('')
     '''x =0
     for i in dictProcess:
         x += dictProcess[i][3]
