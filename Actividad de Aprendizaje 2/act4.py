@@ -52,8 +52,6 @@ def inputProcess(dictProcess,actual_batch,id):
 
         dictProcess[id] = (opString,round(result,4),int(time),actual_batch)  #we can elimate varible 'opString', only show the operation as string
 
-
-
 #---------------------------------------------------------------------------------------------------------
 #CONSOLE
 
