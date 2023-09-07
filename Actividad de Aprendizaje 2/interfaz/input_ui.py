@@ -61,7 +61,7 @@ class Ui_inputProcess(object):
         
         QMetaObject.connectSlotsByName(inputProcess)
 
-        self.windowData = QMainWindow()
+        self.windowData = QWidget()
         self.enterInput1.clicked.connect(self.clicked_button1)
         
 
@@ -74,10 +74,10 @@ class Ui_inputProcess(object):
     # retranslateUi
 
     def clicked_button1(self):
-        ui = Ui_Data()
+        self.ui = Ui_Data()
         process = self.process.value()
         print(process)
-        ui.setupUi(self.windowData,process)
+        self.ui.setupUi(self.windowData,process)
         self.windowData.show()
 
     def exit(self, event):

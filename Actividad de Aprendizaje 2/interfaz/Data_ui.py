@@ -159,10 +159,9 @@ class Ui_Data(object):
         id = self.spinBox_2.value()
         op1 = self.spinBox_3.value()
         op2 = self.spinBox_4.value()
-        #result,opString = self.operation(op1,op2,self.comboBox.currentText)
+        result,opString = self.operation(op1,op2,self.comboBox.currentText())
         time = self.spinBox.value()
-        print(nombre,id,time)
-        self.accept()
+        print(nombre,id,opString,result,time)
         '''dictProcess= {}
         dictProcess[id] = (nombre,opString,result,int(time))
         print(dictProcess)'''
