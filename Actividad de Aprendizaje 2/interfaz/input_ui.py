@@ -20,6 +20,7 @@ from PySide6.QtWidgets import (QApplication, QHBoxLayout, QLabel, QMainWindow,
     QWidget)
 
 from Data_ui import Ui_Data
+import math
 
 class Ui_inputProcess(object):
     def setupUi(self, inputProcess):
@@ -76,6 +77,7 @@ class Ui_inputProcess(object):
     def clicked_button1(self):
         process = self.process.value()
         print(process)
-        self.ui = Ui_Data(process)
+        batch = math.ceil(process/5) #we need to round out
+        self.ui = Ui_Data(process,batch)
         self.ui.setupUi(self.windowData)
         self.windowData.show()

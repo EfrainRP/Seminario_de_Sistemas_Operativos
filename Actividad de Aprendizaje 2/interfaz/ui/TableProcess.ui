@@ -97,8 +97,12 @@
     </property>
    </column>
    <item row="0" column="0">
+    <property name="text">
+     <string/>
+    </property>
     <property name="font">
      <font>
+      <bold>false</bold>
       <kerning>true</kerning>
      </font>
     </property>
@@ -212,6 +216,11 @@
      <string/>
     </property>
    </column>
+   <item row="0" column="0">
+    <property name="textAlignment">
+     <set>AlignCenter</set>
+    </property>
+   </item>
   </widget>
   <widget class="QTableWidget" name="tableFinishing">
    <property name="geometry">
@@ -251,6 +260,9 @@
     </property>
    </column>
    <item row="0" column="0">
+    <property name="text">
+     <string/>
+    </property>
     <property name="textAlignment">
      <set>AlignCenter</set>
     </property>

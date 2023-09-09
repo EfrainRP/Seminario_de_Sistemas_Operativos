@@ -25,12 +25,12 @@ import re
 import random  
 
 class Ui_Data(object):
-    def __init__(self, process):
+    def __init__(self, process, batch):
         self.dictProcess = {} #Dictionary to save data
         self.count_process = process
         self.actual_batch = 1             #Actual batch running
         self.count_batch = 1              #Batch count
-        self.closeEvent = False
+        self.batch = batch
     
     def setupUi(self, Data):
         if not Data.objectName():
@@ -163,8 +163,8 @@ class Ui_Data(object):
 
     def inputDataProcess(self):
         id = int(self.contTimeLCD.value())
-        if id in self.dictProcess:
-            id+=1
+        '''if id in self.dictProcess:
+            id+=1'''
         self.contTimeLCD.display(id)
         op1 = self.spinBox_3.value()
         op2 = self.spinBox_4.value()
@@ -184,11 +184,11 @@ class Ui_Data(object):
 
         self.count_process -= 1
 
-        self.dictProcess[id] = (opString,result,int(time),self.actual_batch)  #we can elimate varible 'opString', only show the operation as string
+        self.dictProcess[id] = (opString,result,int(time),0,self.actual_batch)  #we can elimate varible 'opString', only show the operation as string
         print(self.dictProcess)
 
         if self.count_process < 1 : #Registro todos los procesos anotados
-            self.ui = Ui_TableProcess(self.dictProcess)
+            self.ui = Ui_TableProcess(self.dictProcess,self.batch)
             self.ui.setupUi(self.windowData)
             self.windowData.show()
             return 

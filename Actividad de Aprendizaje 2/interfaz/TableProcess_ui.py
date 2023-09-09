@@ -19,9 +19,13 @@ from PySide6.QtWidgets import (QAbstractScrollArea, QApplication, QFrame, QHeade
     QLCDNumber, QLabel, QSizePolicy, QTableWidget,
     QTableWidgetItem, QWidget)
 
+from queue import Queue
+import time, os
+
 class Ui_TableProcess(object):
-    def __init__(self, Data):
+    def __init__(self, Data, batch):
         self.dictProcess = Data
+        self.batch = batch
 
     def setupUi(self, Form):
         if not Form.objectName():
@@ -46,6 +50,7 @@ class Ui_TableProcess(object):
         if (self.tableActual.rowCount() < 5):
             self.tableActual.setRowCount(5)
         font1 = QFont()
+        font1.setBold(False)
         font1.setKerning(True)
         __qtablewidgetitem3 = QTableWidgetItem()
         __qtablewidgetitem3.setTextAlignment(Qt.AlignCenter);
@@ -97,6 +102,9 @@ class Ui_TableProcess(object):
         self.tableEnEjecucion.setVerticalHeaderItem(3, __qtablewidgetitem9)
         __qtablewidgetitem10 = QTableWidgetItem()
         self.tableEnEjecucion.setVerticalHeaderItem(4, __qtablewidgetitem10)
+        __qtablewidgetitem11 = QTableWidgetItem()
+        __qtablewidgetitem11.setTextAlignment(Qt.AlignCenter);
+        self.tableEnEjecucion.setItem(0, 0, __qtablewidgetitem11)
         self.tableEnEjecucion.setObjectName(u"tableEnEjecucion")
         self.tableEnEjecucion.setGeometry(QRect(340, 80, 271, 161))
         self.tableEnEjecucion.setFont(font2)
@@ -108,19 +116,19 @@ class Ui_TableProcess(object):
         self.tableFinishing = QTableWidget(Form)
         if (self.tableFinishing.columnCount() < 3):
             self.tableFinishing.setColumnCount(3)
-        __qtablewidgetitem11 = QTableWidgetItem()
-        self.tableFinishing.setHorizontalHeaderItem(0, __qtablewidgetitem11)
         __qtablewidgetitem12 = QTableWidgetItem()
-        self.tableFinishing.setHorizontalHeaderItem(1, __qtablewidgetitem12)
+        self.tableFinishing.setHorizontalHeaderItem(0, __qtablewidgetitem12)
         __qtablewidgetitem13 = QTableWidgetItem()
-        self.tableFinishing.setHorizontalHeaderItem(2, __qtablewidgetitem13)
+        self.tableFinishing.setHorizontalHeaderItem(1, __qtablewidgetitem13)
+        __qtablewidgetitem14 = QTableWidgetItem()
+        self.tableFinishing.setHorizontalHeaderItem(2, __qtablewidgetitem14)
         if (self.tableFinishing.rowCount() < 1):
             self.tableFinishing.setRowCount(1)
-        __qtablewidgetitem14 = QTableWidgetItem()
-        self.tableFinishing.setVerticalHeaderItem(0, __qtablewidgetitem14)
         __qtablewidgetitem15 = QTableWidgetItem()
-        __qtablewidgetitem15.setTextAlignment(Qt.AlignCenter);
-        self.tableFinishing.setItem(0, 0, __qtablewidgetitem15)
+        self.tableFinishing.setVerticalHeaderItem(0, __qtablewidgetitem15)
+        __qtablewidgetitem16 = QTableWidgetItem()
+        __qtablewidgetitem16.setTextAlignment(Qt.AlignCenter);
+        self.tableFinishing.setItem(0, 0, __qtablewidgetitem16)
         self.tableFinishing.setObjectName(u"tableFinishing")
         self.tableFinishing.setGeometry(QRect(620, 77, 311, 192))
         self.tableFinishing.setFont(font2)
@@ -145,7 +153,13 @@ class Ui_TableProcess(object):
         self.contTime.setFrameShadow(QFrame.Plain)
         self.contTime.setDigitCount(1)
         self.contTime.setSegmentStyle(QLCDNumber.Filled)
-        self.contTime.setProperty("intValue", 2)
+        self.contTime.setProperty("intValue", 0)
+
+        for r, element in enumerate(self.dictProcess.items()):
+            print(r, element)
+            self.tableActual.setItem(r, 0, QTableWidgetItem(str(element[0])))
+            self.tableActual.setItem(r, 1, QTableWidgetItem(str(element[1][2])))
+            self.tableActual.setItem(r, 2, QTableWidgetItem(str(element[1][3])))
 
         self.retranslateUi(Form)
 
@@ -178,6 +192,11 @@ class Ui_TableProcess(object):
         ___qtablewidgetitem6.setText(QCoreApplication.translate("Form", u"TT", None));
         ___qtablewidgetitem7 = self.tableEnEjecucion.verticalHeaderItem(4)
         ___qtablewidgetitem7.setText(QCoreApplication.translate("Form", u"TR", None));
+
+        __sortingEnabled1 = self.tableEnEjecucion.isSortingEnabled()
+        self.tableEnEjecucion.setSortingEnabled(False)
+        self.tableEnEjecucion.setSortingEnabled(__sortingEnabled1)
+
         ___qtablewidgetitem8 = self.tableFinishing.horizontalHeaderItem(0)
         ___qtablewidgetitem8.setText(QCoreApplication.translate("Form", u"ID", None));
         ___qtablewidgetitem9 = self.tableFinishing.horizontalHeaderItem(1)
@@ -185,11 +204,47 @@ class Ui_TableProcess(object):
         ___qtablewidgetitem10 = self.tableFinishing.horizontalHeaderItem(2)
         ___qtablewidgetitem10.setText(QCoreApplication.translate("Form", u"NL", None));
 
-        __sortingEnabled1 = self.tableFinishing.isSortingEnabled()
+        __sortingEnabled2 = self.tableFinishing.isSortingEnabled()
         self.tableFinishing.setSortingEnabled(False)
-        self.tableFinishing.setSortingEnabled(__sortingEnabled1)
+        self.tableFinishing.setSortingEnabled(__sortingEnabled2)
 
         self.Finishing.setText(QCoreApplication.translate("Form", u"Terminados", None))
         self.countTime.setText(QCoreApplication.translate("Form", u"Contador:", None))
     # retranslateUi
 
+    def runProcess(self):
+        cola = Queue() #Lotes en espera
+        lis = []      #Lotes Terminados
+        lotes = self.batch     #Variable que indica la cantidad de lotes por realizar
+        contador = 0  #Contador global
+
+'''
+ #               fila += 1
+            #--------------------------------------------------------------------------------------------------------
+            limpiar(8,13)   #Limpia las filas en ejecucion
+            imprimir_en_posicion(8, 0, '-------------------- < Proceso en ejecución > --------------------')
+            imprimir_en_posicion(9, 0, f'>Programador: {ejecucion[1][0]}')
+            imprimir_en_posicion(10, 0, f'-ID: {ejecucion[0]}')
+            imprimir_en_posicion(11, 0, f'-Operacion-> {ejecucion[1][1]}')
+            imprimir_en_posicion(12, 0, f'-Tiempo MXE: {ejecucion[1][3]}')
+            TT = 0
+            while TT < ejecucion[1][3]:
+                TT += 1
+                imprimir_en_posicion(13, 0, f'-Tiempo TRA: {TT}')
+                imprimir_en_posicion(14, 0, '                 ')  #Limpia antes de mostrar
+                imprimir_en_posicion(14, 0, f'-Tiempo RES: {ejecucion[1][3]-TT}')
+                contador += 1
+                imprimir_en_posicion(8, 80, f' < Contador: {contador} >')  #Muestra el contador
+                time.sleep(1)
+            lis.append(ejecucion)
+            #limpiar(16,100) #Limpia los terminados
+            imprimir_en_posicion(16, 1, '------------------------- < Terminados > --------------------------')
+            imprimir_en_posicion(17, 1, '>ID\t\t>Operacion\t\t\t>Resultado\t>NL')
+            fila_term = 18
+            for terminados in lis:   #Muestra cada uno de los procesos terminadt\tos
+                idString = resize_string(' ' + str(terminados[0]),18)
+                operationString = resize_string(terminados[1][1],32)
+                resultString = resize_string(' ' + str(terminados[1][2]),14)
+                NL_String = resize_string(' ' + str(terminados[1][4]),4)
+                imprimir_en_posicion(fila_term, 1, f'{idString}{operationString}{resultString}{NL_String}')
+                fila_term += 1'''
