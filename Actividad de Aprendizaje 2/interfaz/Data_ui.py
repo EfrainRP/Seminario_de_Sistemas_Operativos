@@ -20,8 +20,9 @@ from PySide6.QtWidgets import (QApplication, QComboBox, QDialog, QHBoxLayout,
     QSpinBox, QSplitter, QWidget)
 
 from em_window import *
-from DataTable_ui import *
+from TableProcess_ui import *
 import re
+import random  
 
 class Ui_Data(object):
     def __init__(self, process):
@@ -29,6 +30,7 @@ class Ui_Data(object):
         self.count_process = process
         self.actual_batch = 1             #Actual batch running
         self.count_batch = 1              #Batch count
+        self.closeEvent = False
     
     def setupUi(self, Data):
         if not Data.objectName():
@@ -47,12 +49,6 @@ class Ui_Data(object):
         self.splitter = QSplitter(self.splitter_6)
         self.splitter.setObjectName(u"splitter")
         self.splitter.setOrientation(Qt.Horizontal)
-        self.label = QLabel(self.splitter)
-        self.label.setObjectName(u"label")
-        self.splitter.addWidget(self.label)
-        self.lineEdit = QLineEdit(self.splitter)
-        self.lineEdit.setObjectName(u"lineEdit")
-        self.splitter.addWidget(self.lineEdit)
         self.splitter_6.addWidget(self.splitter)
         self.widget = QWidget(self.splitter_6)
         self.widget.setObjectName(u"widget")
@@ -64,11 +60,19 @@ class Ui_Data(object):
 
         self.horizontalLayout.addWidget(self.label_2)
 
-        self.spinBox_2 = QSpinBox(self.widget)
+        '''self.spinBox_2 = QSpinBox(self.widget)
         self.spinBox_2.setObjectName(u"spinBox_2")
         self.spinBox_2.setMaximum(999999)
+        self.spinBox_2.setValue(0)'''
 
-        self.horizontalLayout.addWidget(self.spinBox_2)
+        self.contTimeLCD = QLCDNumber(Data)
+        self.contTimeLCD.setObjectName(u"contTimeLCD")
+        self.contTimeLCD.setFrameShadow(QFrame.Plain)
+        self.contTimeLCD.setDigitCount(3)
+        self.contTimeLCD.setSegmentStyle(QLCDNumber.Filled)
+        self.contTimeLCD.setProperty("intValue", 0)
+
+        self.horizontalLayout.addWidget(self.contTimeLCD)
 
         self.splitter_6.addWidget(self.widget)
         self.splitter_3 = QSplitter(self.splitter_6)
@@ -138,7 +142,6 @@ class Ui_Data(object):
     def retranslateUi(self, Data):
         Data.setWindowTitle(QCoreApplication.translate("Data", u"Data", None))
         self.pushButton.setText(QCoreApplication.translate("Data", u"Enter", None))
-        self.label.setText(QCoreApplication.translate("Data", u"Nombre", None))
         self.label_2.setText(QCoreApplication.translate("Data", u"ID:", None))
         self.label_3.setText(QCoreApplication.translate("Data", u"Cifra #1: ", None))
         self.label_4.setText(QCoreApplication.translate("Data", u"Cifra #2:", None))
@@ -153,23 +156,16 @@ class Ui_Data(object):
         self.label_6.setText(QCoreApplication.translate("Data", u"Tiempo Aprox.:", None))
     # retranslateUi
     def clearInputs(self):
-        self.lineEdit.clear()
-        self.spinBox_2.setValue(0)
         self.spinBox_3.setValue(0)
         self.spinBox_4.setValue(0)
         self.comboBox.setCurrentIndex(0)
         self.spinBox.setValue(1)
 
     def inputDataProcess(self):
-        nombre = self.lineEdit.text()
-        if not re.match("^[a-zA-Z]+\s?[a-zA-Z]*$", nombre): #We use a expresion regular to validate the string
-            VentanaEmergente("\tNombre NO valido\n           Ingrese caracter validos").exec_()
-            self.clearInputs()
-            return
-        id = self.spinBox_2.value()
+        id = self.contTimeLCD.value()
         if id in self.dictProcess:
-            VentanaEmergente("\tID repetido\n    Introduzca NUEVAMENTE la ID").exec_()
-            return
+            id+=1
+        self.contTimeLCD.display(id)
         op1 = self.spinBox_3.value()
         op2 = self.spinBox_4.value()
         operator = self.comboBox.currentText()
@@ -188,11 +184,11 @@ class Ui_Data(object):
 
         self.count_process -= 1
 
-        self.dictProcess[id] = (nombre,opString,result,int(time),self.actual_batch)  #we can elimate varible 'opString', only show the operation as string
+        self.dictProcess[id] = (opString,result,int(time),self.actual_batch)  #we can elimate varible 'opString', only show the operation as string
         print(self.dictProcess)
 
         if self.count_process < 1 : #Registro todos los procesos anotados
-            self.ui = Ui_DataTable(self.dictProcess)
+            self.ui = Ui_TableProcess(self.dictProcess)
             self.ui.setupUi(self.windowData)
             self.windowData.show()
             return 
