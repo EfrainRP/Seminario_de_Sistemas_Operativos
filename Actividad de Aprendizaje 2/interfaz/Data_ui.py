@@ -162,7 +162,7 @@ class Ui_Data(object):
         self.spinBox.setValue(1)
 
     def inputDataProcess(self):
-        id = self.contTimeLCD.value()
+        id = int(self.contTimeLCD.value())
         if id in self.dictProcess:
             id+=1
         self.contTimeLCD.display(id)
@@ -192,7 +192,7 @@ class Ui_Data(object):
             self.ui.setupUi(self.windowData)
             self.windowData.show()
             return 
-        
+        self.contTimeLCD.display(id+1)
         self.clearInputs()
 
     def operation(self, op1,op2, op):

@@ -145,7 +145,7 @@ class Ui_TableProcess(object):
         self.contTime.setFrameShadow(QFrame.Plain)
         self.contTime.setDigitCount(1)
         self.contTime.setSegmentStyle(QLCDNumber.Filled)
-        self.contTime.setProperty("intValue", 0)
+        self.contTime.setProperty("intValue", 2)
 
         self.retranslateUi(Form)
 
