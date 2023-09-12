@@ -185,7 +185,7 @@ class Ui_Data(object):
         self.count_process -= 1
 
         self.dictProcess[id] = (opString,result,int(time),0,self.actual_batch)  #we can elimate varible 'opString', only show the operation as string
-        print(self.dictProcess)
+        #print(self.dictProcess)
 
         if self.count_process < 1 : #Registro todos los procesos anotados
             self.ui = Ui_TableProcess(self.dictProcess,self.batch)

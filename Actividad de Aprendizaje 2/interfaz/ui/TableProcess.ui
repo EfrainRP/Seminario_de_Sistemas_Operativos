@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>940</width>
+    <width>839</width>
     <height>286</height>
    </rect>
   </property>
@@ -137,7 +137,7 @@
    <property name="geometry">
     <rect>
      <x>340</x>
-     <y>53</y>
+     <y>50</y>
      <width>161</width>
      <height>21</height>
     </rect>
@@ -157,7 +157,7 @@
     <rect>
      <x>340</x>
      <y>80</y>
-     <width>271</width>
+     <width>171</width>
      <height>161</height>
     </rect>
    </property>
@@ -211,21 +211,11 @@
      <string/>
     </property>
    </column>
-   <column>
-    <property name="text">
-     <string/>
-    </property>
-   </column>
-   <item row="0" column="0">
-    <property name="textAlignment">
-     <set>AlignCenter</set>
-    </property>
-   </item>
   </widget>
   <widget class="QTableWidget" name="tableFinishing">
    <property name="geometry">
     <rect>
-     <x>620</x>
+     <x>520</x>
      <y>77</y>
      <width>311</width>
      <height>192</height>
@@ -271,7 +261,7 @@
   <widget class="QLabel" name="Finishing">
    <property name="geometry">
     <rect>
-     <x>620</x>
+     <x>520</x>
      <y>50</y>
      <width>89</width>
      <height>21</height>
