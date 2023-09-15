@@ -1,4 +1,4 @@
-import math,re,time,random,keyboard,os
+import math,re,time,random,keyboard,os,threading
 
 class Process:
     def __init__(self,id):
@@ -50,6 +50,10 @@ class Process:
 def console(elementos):
     lis = []      #Procesos Terminados
     contador = 0  #Contador global
+    grupito = []
+    count = 0
+    process = len(elementos)
+    new = process-5
 
     def resize_string(input_string, new_size): #Resize string for table
         if new_size < len(input_string):
@@ -58,7 +62,18 @@ def console(elementos):
             return input_string + ' ' * (new_size - len(input_string)) #Fill out the input_string to have new len of string
         else:
             return input_string
-
+        
+    def bloqueado(proceso):
+        time.sleep(8)
+        imprimir_en_posicion(18, 80, f' < Proceso añadido {proceso} >')  #Muestra el contador
+        #print(f"Proceso {proceso})")
+        grupito.append(proceso)
+        limpiar(3,8)    #Limpia las filas en actuales
+        fila = 3
+        for element in grupito:       #Actualiza la actual cola
+            imprimir_en_posicion(fila, 0,f' {element.process_id}\t  {element.time}\t  {element.time_run}')
+            fila += 1
+        
     def limpiar(inicial,final):   #Limpia por consola
         for row in range(inicial,final):
             imprimir_en_posicion(row, 0,' ' * 100)
@@ -67,17 +82,27 @@ def console(elementos):
         # Usar caracteres de escape ANSI para posicionar el cursor
         print(f"\033[{fila};{columna}H{mensaje}", flush=True)
     
-    process = len(elementos)
-    while process  != 0:    #Mientras haya procesos pendientes
+    for i in range(5):
+        initial = elementos.pop(0)
+        #print(f'{i+1} = {initial}')
+        grupito.append(initial)   #Primeros 5 procesos 
+   
+    while count != process:    #Mientras haya procesos pendientes
         #-------------------------------------------------------------------------------
-        while len(elementos) != 0:               #Se muestra cada elemento del grupo
+        while count != process:               #Se muestra cada elemento del grupo
             interrupted = False
+            imprimir_en_posicion(0, 80, f' < N° Procesos nuevos: {new} > ')
             imprimir_en_posicion(0, 0, '-------------------------- < Listos > -------------------------')
             imprimir_en_posicion(2, 0, '>ID\t>TME\t>TT')
-            ejecucion = elementos.pop(0)
+            if len(grupito) == 0:      #Si el grupo esta vacio (todos estan bloqueados) no se muestra nada por consola
+                #ejecucion = default
+                limpiar(9,15)   #Limpia las filas en ejecucion
+                continue
+            else:
+                ejecucion = grupito.pop(0) #Se mu
             limpiar(3,8)    #Limpia las filas en actuales
             fila = 3
-            for element in elementos:       #Actualiza la actual cola
+            for element in grupito:       #Actualiza la actual cola
                 imprimir_en_posicion(fila, 0,f' {element.process_id}\t  {element.time}\t  {element.time_run}')
                 fila += 1
             '''if len(grupito) > 3: #Interrupcion para ver cuantos entran en el grupito (entran 4)
@@ -101,7 +126,11 @@ def console(elementos):
                 time.sleep(0.1)
                 if keyboard.is_pressed('i'):  # Verifica si la tecla "e" ha sido presionada
                     #imprimir_en_posicion(14, 80, f' < INTERRUPCION >')  #Muestra el contado
-                    elementos.append(ejecucion)
+                    t = threading.Thread(target=bloqueado, args=(ejecucion,))
+                    t.start()
+                    imprimir_en_posicion(16, 80, '                 ')  #Limpia antes de mostrar
+                    imprimir_en_posicion(14, 80, f' < BLOQUEADO >')  #Muestra el contador
+                    #elementos.append(ejecucion)
                     interrupted = True
                     break
                 if keyboard.is_pressed('e'):  # Verifica si la tecla "e" ha sido presionada
@@ -119,6 +148,15 @@ def console(elementos):
                 lis.append(ejecucion)
                 imprimir_en_posicion(16, 1, '------------------------- < Terminados > --------------------------')
                 imprimir_en_posicion(17, 1, '>ID\t\t>Operacion\t\t\t>Resultado')
+                count += 1
+                if len(elementos) != 0:
+                    next = elementos.pop(0) #Se añade el proximo proceso
+                    grupito.append(next)
+                if new != 0:
+                    new -= 1
+                imprimir_en_posicion(20, 80, '                          ')  #Limpia antes de mostrar
+                imprimir_en_posicion(20, 80, f' < Procesos {count} >')  #Muestra el contador
+                
                 fila_term = 18
                 for terminados in lis:   #Muestra cada uno de los procesos terminadt\tos
                     idString = resize_string(' ' + str(terminados.process_id),18)
@@ -129,7 +167,7 @@ def console(elementos):
             else:                    #Si hay interrupcion 
                 continue
             #limpiar(16,100) #Limpia los terminados
-        process -= 1
+        
         limpiar(9,15)   #Limpia las filas en ejecucion al terminar el programa
         limpiar(2,8)    #Limpia las filas en actuales
     imprimir_en_posicion(18+len(lis), 1, '') #"Posiciona el cursor" para que se imprima al final del programa
