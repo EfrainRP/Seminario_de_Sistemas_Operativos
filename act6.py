@@ -1,4 +1,7 @@
 import math,re,time,random,keyboard,os, threading
+pausa = threading.Event()
+pausado = False
+TT = 0
 
 class Process:
     def __init__(self,id):
@@ -54,6 +57,7 @@ def console(elementos):
     count = 0
     process = len(elementos)
     new = process-5
+    subprocesos = []
 
     def resize_string(input_string, new_size): #Resize string for table
         if new_size < len(input_string):
@@ -62,16 +66,28 @@ def console(elementos):
             return input_string + ' ' * (new_size - len(input_string)) #Fill out the input_string to have new len of string
         else:
             return input_string
+
+    
+    def pausar_subprocesos():
+        global pausado
+        pausado = True   
         
     def bloqueado(proceso):   #Estado bloqueado
-        time.sleep(8)
-        #imprimir_en_posicion(18, 80, f' < Proceso añadido {proceso} >')  #Muestra el proceso añadido
-        grupito.append(proceso)
-        limpiar(3,8)    #Limpia las filas en actuales
-        fila = 3
-        for element in grupito:       #Actualiza el actual grupo de procesos
-            imprimir_en_posicion(fila, 0,f' {element.process_id}\t  {element.time}\t  {element.time_run}')
-            fila += 1
+            TT = 0
+            while TT != 8:
+                pausa.wait()
+                TT += 1
+                imprimir_en_posicion(0, 70, f' < TT {TT} > ')
+                time.sleep(1)
+            if TT == 8:
+                #imprimir_en_posicion(18, 80, f' < Proceso añadido {proceso} >')  #Muestra el proceso añadido
+                grupito.append(proceso)
+                limpiar(3,8)    #Limpia las filas en actuales
+                fila = 3
+                for element in grupito:       #Actualiza el actual grupo de procesos
+                    imprimir_en_posicion(fila, 0,f' {element.process_id}\t  {element.time}\t  {element.time_run}')
+                    fila += 1
+                    
         
     def limpiar(inicial,final):   #Limpia por consola
         for row in range(inicial,final):
@@ -97,6 +113,14 @@ def console(elementos):
                 imprimir_en_posicion(8, 80, f' < Contador: {contador} >')  #Muestra el contador
                 limpiar(9,15)   #Limpia las filas en ejecucion
                 time.sleep(0.1)
+                if keyboard.is_pressed('p'):  # Verifica si la tecla "p" ha sido presionada
+                    imprimir_en_posicion(16, 80, '                 ')  #Limpia antes de mostrar
+                    imprimir_en_posicion(14, 80, f' < PAUSA >')  #Muestra el contador
+                    pausa.clear()
+                    keyboard.wait("c") #Espera una "c"
+                    pausa.set()
+                    imprimir_en_posicion(16, 80, f' < CONTINUANDO >')  #Muestra el contador
+                    imprimir_en_posicion(14, 80, '                 ')  #Limpia antes de mostrar
                 continue
             else:
                 ejecucion = grupito.pop(0) #Sino, obtiene el mas reciente del grupito para mostrar 
@@ -128,6 +152,8 @@ def console(elementos):
                     #imprimir_en_posicion(14, 80, f' < INTERRUPCION >')  #Muestra el contado
                     t = threading.Thread(target=bloqueado, args=(ejecucion,)) #Subproceso bloqueados
                     t.start() 
+                    pausa.set()
+                    subprocesos.append(t)
                     imprimir_en_posicion(16, 80, '                 ')  #Limpia antes de mostrar
                     imprimir_en_posicion(14, 80, f' < BLOQUEADO >')  #Muestra el contador
                     #elementos.append(ejecucion)
@@ -140,7 +166,9 @@ def console(elementos):
                 if keyboard.is_pressed('p'):  # Verifica si la tecla "p" ha sido presionada
                     imprimir_en_posicion(16, 80, '                 ')  #Limpia antes de mostrar
                     imprimir_en_posicion(14, 80, f' < PAUSA >')  #Muestra el contador
+                    pausa.clear()
                     keyboard.wait("c") #Espera una "c"
+                    pausa.set()
                     imprimir_en_posicion(16, 80, f' < CONTINUANDO >')  #Muestra el contador
                     imprimir_en_posicion(14, 80, '                 ')  #Limpia antes de mostrar
                 
