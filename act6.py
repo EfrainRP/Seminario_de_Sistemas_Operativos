@@ -1,7 +1,5 @@
 import math,re,time,random,keyboard,os, threading
 pausa = threading.Event()
-pausado = False
-TT = 0
 
 class Process:
     def __init__(self,id):
@@ -53,11 +51,10 @@ class Process:
 def console(elementos):
     lis = []      #Procesos Terminados
     contador = 0  #Contador global
-    grupito = []
-    count = 0
-    process = len(elementos)
-    new = process-5
-    subprocesos = []
+    grupito = []  #Grupo de 5 procesos
+    count = 0     #Process Count
+    process = len(elementos) #Processes
+    new = process-5 #New Process
 
     def resize_string(input_string, new_size): #Resize string for table
         if new_size < len(input_string):
@@ -66,20 +63,15 @@ def console(elementos):
             return input_string + ' ' * (new_size - len(input_string)) #Fill out the input_string to have new len of string
         else:
             return input_string
-
-    
-    def pausar_subprocesos():
-        global pausado
-        pausado = True   
         
     def bloqueado(proceso):   #Estado bloqueado
             TT = 0
-            while TT != 8:
-                pausa.wait()
+            while TT != 8:  #Tiempo de 8 seg
+                pausa.wait() #Detiene temporalmente al subproceso
                 TT += 1
                 imprimir_en_posicion(0, 70, f' < TT {TT} > ')
                 time.sleep(1)
-            if TT == 8:
+            if TT == 8:  #Si transcurren 8 seg
                 #imprimir_en_posicion(18, 80, f' < Proceso añadido {proceso} >')  #Muestra el proceso añadido
                 grupito.append(proceso)
                 limpiar(3,8)    #Limpia las filas en actuales
@@ -115,11 +107,11 @@ def console(elementos):
                 time.sleep(0.1)
                 if keyboard.is_pressed('p'):  # Verifica si la tecla "p" ha sido presionada
                     imprimir_en_posicion(16, 80, '                 ')  #Limpia antes de mostrar
-                    imprimir_en_posicion(14, 80, f' < PAUSA >')  #Muestra el contador
-                    pausa.clear()
+                    imprimir_en_posicion(14, 80, f' < PAUSA >')  #Imprime 
+                    pausa.clear()  #Pausa los subprocesos
                     keyboard.wait("c") #Espera una "c"
-                    pausa.set()
-                    imprimir_en_posicion(16, 80, f' < CONTINUANDO >')  #Muestra el contador
+                    pausa.set()    #Despausa los subprocesos
+                    imprimir_en_posicion(16, 80, f' < CONTINUANDO >')  #Imprime 
                     imprimir_en_posicion(14, 80, '                 ')  #Limpia antes de mostrar
                 continue
             else:
@@ -153,7 +145,6 @@ def console(elementos):
                     t = threading.Thread(target=bloqueado, args=(ejecucion,)) #Subproceso bloqueados
                     t.start() 
                     pausa.set()
-                    subprocesos.append(t)
                     imprimir_en_posicion(16, 80, '                 ')  #Limpia antes de mostrar
                     imprimir_en_posicion(14, 80, f' < BLOQUEADO >')  #Muestra el contador
                     #elementos.append(ejecucion)
@@ -166,9 +157,9 @@ def console(elementos):
                 if keyboard.is_pressed('p'):  # Verifica si la tecla "p" ha sido presionada
                     imprimir_en_posicion(16, 80, '                 ')  #Limpia antes de mostrar
                     imprimir_en_posicion(14, 80, f' < PAUSA >')  #Muestra el contador
-                    pausa.clear()
+                    pausa.clear() #Pausa los subprocesos
                     keyboard.wait("c") #Espera una "c"
-                    pausa.set()
+                    pausa.set()   #Despausa los subprocesos
                     imprimir_en_posicion(16, 80, f' < CONTINUANDO >')  #Muestra el contador
                     imprimir_en_posicion(14, 80, '                 ')  #Limpia antes de mostrar
                 
@@ -183,7 +174,7 @@ def console(elementos):
                 if new != 0:
                     new -= 1
                 fila_term = 18
-                for terminados in lis:   #Muestra cada uno de los procesos terminadt\tos
+                for terminados in lis:   #Muestra cada uno de los procesos terminados
                     idString = resize_string(' ' + str(terminados.process_id),18)
                     operationString = resize_string(terminados.opString,32)
                     resultString = resize_string(' ' + str(terminados.result),14)
