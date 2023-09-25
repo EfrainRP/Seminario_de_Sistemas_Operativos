@@ -5,7 +5,13 @@ class Process:
     def __init__(self,id):
         self.process_id = id    #ID
         self.time = random.randint(20, 40)  #TME
-        self.time_run = 0   #Time running
+        self.time_arrival = 0 #Time of Arrival
+        self.completion_time = 0 #Completion Time
+        self.return_time = 0  #Return time
+        self.response_time = 0  #Response time
+        self.band_response = False  #Band response time
+        self.wait_time = 0 #Wait time 
+        self.time_run = 0   #Time running = TT
 
         result,self.opString = self._operation()  #OperationStr
         self.result = round(result,4)   #Result
@@ -38,11 +44,11 @@ class Process:
         elif op =="%":
             while op2 == 0:
                 op2 = int(opValidator())
-            result = op1%op2
+            result = op1%op2                                                       
             return result,f'{op1} % {op2}'
     
     def print(self): #Regresa los tributos como cadena
-        return f'ID: {self.process_id} TME: {self.time} TT : {self.time_run} {self.opString} = {self.result}'
+        return f'ID: {self.process_id} TME: {self.time} TT : {self.time_run} {self.opString} = {self.result} TL : {self.time_arrival} TF : {self.completion_time} TR : {self.return_time} TRES : {self.response_time} TW : {self.wait_time} BAND : {self.band_response}'
 
 
 #---------------------------------------------------------------------------------------------------------
@@ -91,6 +97,7 @@ def console(elementos):
     
     for i in range(5): #Toma los primeros 5 procesos 
         initial = elementos.pop(0)
+        initial.time_arrival = contador  #Tiempo de llegada de los primeros 5 procesos 
         grupito.append(initial)    
    
     while count != process:    #Mientras haya procesos pendientes
@@ -115,7 +122,11 @@ def console(elementos):
                     imprimir_en_posicion(14, 80, '                 ')  #Limpia antes de mostrar
                 continue
             else:
-                ejecucion = grupito.pop(0) #Sino, obtiene el mas reciente del grupito para mostrar 
+                ejecucion = grupito.pop(0) #Sino, obtiene el mas reciente del grupito para mostrar
+                imprimir_en_posicion(13, 80, f'{ejecucion.band_response}')  #Muestra el contador
+                if ejecucion.band_response == False:
+                    ejecucion.response_time = (contador-ejecucion.time_arrival) #Tiempo de respuesta 
+                    ejecucion.band_response = True
             limpiar(3,8)    #Limpia las filas en actuales
             fila = 3
             for element in grupito:       #Actualiza la actual cola
@@ -138,6 +149,7 @@ def console(elementos):
                 imprimir_en_posicion(14, 0, '                 ')  #Limpia antes de mostrar
                 imprimir_en_posicion(14, 0, f'-Tiempo RES: {ejecucion.time-ejecucion.time_run}        ')
                 contador += 1
+                ejecucion.wait_time += 1
                 imprimir_en_posicion(8, 80, f' < Contador: {contador} >')  #Muestra el contador
                 time.sleep(0.1)
                 if keyboard.is_pressed('i'):  # Verifica si la tecla "e" ha sido presionada
@@ -164,12 +176,15 @@ def console(elementos):
                     imprimir_en_posicion(14, 80, '                 ')  #Limpia antes de mostrar
                 
             if not interrupted:      #Si no se interrumpio 
+                ejecucion.completion_time = contador  #Tiempo de finalizacion
+                ejecucion.return_time = (ejecucion.completion_time-ejecucion.time_arrival) #Tiempo de retorno
                 lis.append(ejecucion)
                 imprimir_en_posicion(16, 1, '------------------------- < Terminados > --------------------------')
-                imprimir_en_posicion(17, 1, '>ID\t\t>Operacion\t\t\t>Resultado')
+                imprimir_en_posicion(17, 1, '>ID\t\t>Operacion\t\t\t>Resultado\tTL\tTF\tTR\tTRES\tTE\tTS')
                 count += 1
                 if len(elementos) != 0:
                     next = elementos.pop(0) #Se añade el proximo proceso
+                    next.time_arrival = contador     #Tiempo de llegada 
                     grupito.append(next)
                 if new != 0:
                     new -= 1
@@ -178,7 +193,13 @@ def console(elementos):
                     idString = resize_string(' ' + str(terminados.process_id),18)
                     operationString = resize_string(terminados.opString,32)
                     resultString = resize_string(' ' + str(terminados.result),14)
-                    imprimir_en_posicion(fila_term, 1, f'{idString}{operationString}{resultString}')
+                    time_arrival = resize_string(' ' + str(terminados.time_arrival),7)
+                    completion_time = resize_string(' ' + str(terminados.completion_time),8)
+                    return_time = resize_string(' ' + str(terminados.return_time),8)
+                    response_time = resize_string(' ' + str(terminados.response_time),8)
+                    wait_time = resize_string(' ' + str(terminados.wait_time),8)
+                    run_time = resize_string(' ' + str(terminados.time_run),8)
+                    imprimir_en_posicion(fila_term, 1, f'{idString}{operationString}{resultString}{time_arrival}{completion_time}{return_time}{response_time}{wait_time}{run_time}')
                     fila_term += 1
             else:                    #Si hay interrupcion 
                 continue
