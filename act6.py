@@ -1,5 +1,9 @@
 import math,re,time,random,keyboard,os, threading
 pausa = threading.Event()
+end = False #END Thread
+key_i = False
+key_e = False
+key_p = False
 
 class Process:
     def __init__(self,id):
@@ -54,13 +58,16 @@ class Process:
 #---------------------------------------------------------------------------------------------------------
 #CONSOLE
 
+
+
 def console(elementos):
+    global key_i,key_e,key_p,end
     lis = []      #Procesos Terminados
     contador = 0  #Contador global
     grupito = []  #Grupo de 5 procesos
     count = 0     #Process Count
     process = len(elementos) #Processes
-    new = process-5 #New Process
+    
 
     def resize_string(input_string, new_size): #Resize string for table
         if new_size < len(input_string):
@@ -76,7 +83,7 @@ def console(elementos):
                 pausa.wait() #Detiene temporalmente al subproceso
                 TT += 1
                 imprimir_en_posicion(0, 70, f' < TT {TT} > ')
-                time.sleep(1)
+                time.sleep(0.5)
             if TT == 8:  #Si transcurren 8 seg
                 #imprimir_en_posicion(18, 80, f' < Proceso añadido {proceso} >')  #Muestra el proceso añadido
                 grupito.append(proceso)
@@ -84,8 +91,7 @@ def console(elementos):
                 fila = 3
                 for element in grupito:       #Actualiza el actual grupo de procesos
                     imprimir_en_posicion(fila, 0,f' {element.process_id}\t  {element.time}\t  {element.time_run}')
-                    fila += 1
-                    
+                    fila += 1             
         
     def limpiar(inicial,final):   #Limpia por consola
         for row in range(inicial,final):
@@ -94,11 +100,19 @@ def console(elementos):
     def imprimir_en_posicion(fila, columna, mensaje):  #Imprime por la posicion mencionada
         # Usar caracteres de escape ANSI para posicionar el cursor
         print(f"\033[{fila};{columna}H{mensaje}", flush=True)
-    
-    for i in range(5): #Toma los primeros 5 procesos 
-        initial = elementos.pop(0)
-        initial.time_arrival = contador  #Tiempo de llegada de los primeros 5 procesos 
-        grupito.append(initial)    
+        
+    if len(elementos) > 5: #Procesos mayores a 5
+        for i in range(5): #Toma los primeros 5 procesos 
+           initial = elementos.pop(0)
+           initial.time_arrival = contador  #Tiempo de llegada de los primeros 5 procesos 
+           grupito.append(initial)    
+        new = process-5 #New Process
+    else: #Procesos menores a 6
+        for i in range(len(elementos)): #Toma todos lox procesos 
+           initial = elementos.pop(0)
+           initial.time_arrival = contador  #Tiempo de llegada de todos los procesos
+           grupito.append(initial)  
+        new = process-len(grupito) #New Process
    
     while count != process:    #Mientras haya procesos pendientes
         #-------------------------------------------------------------------------------
@@ -111,8 +125,9 @@ def console(elementos):
                 contador += 1
                 imprimir_en_posicion(8, 80, f' < Contador: {contador} >')  #Muestra el contador
                 limpiar(9,15)   #Limpia las filas en ejecucion
-                time.sleep(0.1)
-                if keyboard.is_pressed('p'):  # Verifica si la tecla "p" ha sido presionada
+                time.sleep(0.5)
+                if key_p == True:
+                #if keyboard.is_pressed('p'):  # Verifica si la tecla "p" ha sido presionada
                     imprimir_en_posicion(16, 80, '                 ')  #Limpia antes de mostrar
                     imprimir_en_posicion(14, 80, f' < PAUSA >')  #Imprime 
                     pausa.clear()  #Pausa los subprocesos
@@ -120,6 +135,7 @@ def console(elementos):
                     pausa.set()    #Despausa los subprocesos
                     imprimir_en_posicion(16, 80, f' < CONTINUANDO >')  #Imprime 
                     imprimir_en_posicion(14, 80, '                 ')  #Limpia antes de mostrar
+                    key_p = False
                 continue
             else:
                 ejecucion = grupito.pop(0) #Sino, obtiene el mas reciente del grupito para mostrar
@@ -151,8 +167,9 @@ def console(elementos):
                 contador += 1
                 ejecucion.wait_time += 1
                 imprimir_en_posicion(8, 80, f' < Contador: {contador} >')  #Muestra el contador
-                time.sleep(0.1)
-                if keyboard.is_pressed('i'):  # Verifica si la tecla "e" ha sido presionada
+                time.sleep(0.5)
+                if key_i == True:
+                    #if keyboard.is_pressed('i'):  # Verifica si la tecla "e" ha sido presionada
                     #imprimir_en_posicion(14, 80, f' < INTERRUPCION >')  #Muestra el contado
                     t = threading.Thread(target=bloqueado, args=(ejecucion,)) #Subproceso bloqueados
                     t.start() 
@@ -161,12 +178,16 @@ def console(elementos):
                     imprimir_en_posicion(14, 80, f' < BLOQUEADO >')  #Muestra el contador
                     #elementos.append(ejecucion)
                     interrupted = True
+                    key_i = False
                     break
-                if keyboard.is_pressed('e'):  # Verifica si la tecla "e" ha sido presionada
+                if key_e == True:
+                    #if keyboard.is_pressed('e'):  # Verifica si la tecla "e" ha sido presionada
                     #imprimir_en_posicion(14, 80, f' < ERROR >')  #Muestra el contador
                     ejecucion.result = 'Error'
+                    key_e = False
                     break
-                if keyboard.is_pressed('p'):  # Verifica si la tecla "p" ha sido presionada
+                if key_p == True:
+                    #if keyboard.is_pressed('p'):  # Verifica si la tecla "p" ha sido presionada
                     imprimir_en_posicion(16, 80, '                 ')  #Limpia antes de mostrar
                     imprimir_en_posicion(14, 80, f' < PAUSA >')  #Muestra el contador
                     pausa.clear() #Pausa los subprocesos
@@ -174,10 +195,12 @@ def console(elementos):
                     pausa.set()   #Despausa los subprocesos
                     imprimir_en_posicion(16, 80, f' < CONTINUANDO >')  #Muestra el contador
                     imprimir_en_posicion(14, 80, '                 ')  #Limpia antes de mostrar
+                    key_p = False
                 
             if not interrupted:      #Si no se interrumpio 
                 ejecucion.completion_time = contador  #Tiempo de finalizacion
                 ejecucion.return_time = (ejecucion.completion_time-ejecucion.time_arrival) #Tiempo de retorno
+                ejecucion.wait_time = (ejecucion.return_time-ejecucion.time_run) #Tiempo de espera
                 lis.append(ejecucion)
                 imprimir_en_posicion(16, 1, '------------------------- < Terminados > --------------------------')
                 imprimir_en_posicion(17, 1, '>ID\t\t>Operacion\t\t\t>Resultado\tTL\tTF\tTR\tTRES\tTE\tTS')
@@ -198,8 +221,8 @@ def console(elementos):
                     return_time = resize_string(' ' + str(terminados.return_time),8)
                     response_time = resize_string(' ' + str(terminados.response_time),8)
                     wait_time = resize_string(' ' + str(terminados.wait_time),8)
-                    run_time = resize_string(' ' + str(terminados.time_run),8)
-                    imprimir_en_posicion(fila_term, 1, f'{idString}{operationString}{resultString}{time_arrival}{completion_time}{return_time}{response_time}{wait_time}{run_time}')
+                    time_run = resize_string(' ' + str(terminados.time_run),8)
+                    imprimir_en_posicion(fila_term, 1, f'{idString}{operationString}{resultString}{time_arrival}{completion_time}{return_time}{response_time}{wait_time}{time_run}')
                     fila_term += 1
             else:                    #Si hay interrupcion 
                 continue
@@ -208,8 +231,28 @@ def console(elementos):
         limpiar(9,15)   #Limpia las filas en ejecucion al terminar el programa
         limpiar(2,8)    #Limpia las filas en actuales
     imprimir_en_posicion(18+len(lis), 1, '') #"Posiciona el cursor" para que se imprima al final del programa
+    end = True
+    print('Press Enter to finish')
 
+def key():  #Key thread
+    global key_i,key_e,key_p,key_c,end
+    while not end:
+        event = keyboard.read_event()
+        if event.event_type == keyboard.KEY_DOWN and event.name == 'i':
+            #print("INTERRUMPED")
+            key_i = True
+        if event.event_type == keyboard.KEY_DOWN and event.name == 'e':
+            #print("ERROR")
+            key_e = True
+        if event.event_type == keyboard.KEY_DOWN and event.name == 'p':
+            #print("PAUSE")
+            key_p = True
+        if event.event_type == keyboard.KEY_DOWN and event.name == 'enter':
+            print("<Finished process>")
+    
 def main():
+    subkey = threading.Thread(target=key) #Key thread
+    subkey.start() #Key thread start
     os.system('cls')
     
     process = input("Introduzca la cantidad de procesos a realizar: ")
@@ -227,9 +270,9 @@ def main():
     for i in listProcess:
         print(i.print())
 
-    input('Press enter')
+    #input('Press enter')
     os.system('cls')
     console(listProcess)
-
+    
 if __name__ == "__main__":
     main()
