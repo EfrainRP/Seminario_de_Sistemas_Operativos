@@ -92,7 +92,7 @@ def console(elementos):
                 #imprimir_en_posicion(18, 80, f' < Proceso añadido {proceso} >')  #Muestra el proceso añadido
                 grupito.append(proceso)
                 limpiar(3,8)    #Limpia las filas en actuales
-                imprimir_en_posicion(pos,70, " "*15)    #Limpia las filas en bloqueados
+                imprimir_en_posicion(pos,70, " "*20)    #Limpia las filas en bloqueados
                 fila = 3
                 for element in grupito:       #Actualiza el actual grupo de procesos
                     imprimir_en_posicion(fila, 0,f' {element.process_id}\t  {element.time}\t  {element.time_run}')
@@ -135,14 +135,14 @@ def console(elementos):
                 time.sleep(0.5)
                 if key_p == True:
                 #if keyboard.is_pressed('p'):  # Verifica si la tecla "p" ha sido presionada
-                    imprimir_en_posicion(16, 80, " "*15)  #Limpia antes de mostrar
-                    imprimir_en_posicion(14, 80, f' < PAUSA >       ')  #Imprime 
-                    imprimir_en_posicion(14, 80, "  "*15)  #Limpia antes de mostrar
+                    imprimir_en_posicion(16, 90, " "*15)  #Limpia antes de mostrar
+                    imprimir_en_posicion(16, 90, f' < PAUSA >       ')  #Imprime 
+                    imprimir_en_posicion(16, 90, "  "*15)  #Limpia antes de mostrar
                     pausa.clear()  #Pausa los subprocesos
                     keyboard.wait("c") #Espera una "c"
                     pausa.set()    #Despausa los subprocesos
-                    imprimir_en_posicion(16, 80, f' < CONTINUANDO >')  #Imprime 
-                    imprimir_en_posicion(14, 80, "  "*15)  #Limpia antes de mostrar
+                    imprimir_en_posicion(16, 90, f' < CONTINUANDO >        ')  #Imprime 
+                    imprimir_en_posicion(16, 90, "  "*15)  #Limpia antes de mostrar
                     key_p = False
                 continue
             else:
@@ -201,14 +201,14 @@ def console(elementos):
                     break
                 if key_p == True:
                     #if keyboard.is_pressed('p'):  # Verifica si la tecla "p" ha sido presionada
-                    imprimir_en_posicion(16, 80, '                 ')  #Limpia antes de mostrar
-                    imprimir_en_posicion(14, 80, f' < PAUSA >')  #Muestra el contador
+                    imprimir_en_posicion(16, 90, '                 ')  #Limpia antes de mostrar
+                    imprimir_en_posicion(16, 90, f' < PAUSA >')  #Muestra el contador
                     pausa.clear() #Pausa los subprocesos
                     keyboard.wait("c") #Espera una "c"
                     pausa.set()   #Despausa los subprocesos
-                    imprimir_en_posicion(14, 80, "  "*15)  #Limpia antes de mostrar 
-                    imprimir_en_posicion(16, 80, f' < CONTINUANDO >')  #Muestra el contador
-                    imprimir_en_posicion(14, 80, '                 ')  #Limpia antes de mostrar
+                    imprimir_en_posicion(16, 90, "  "*15)  #Limpia antes de mostrar 
+                    imprimir_en_posicion(16, 90, f' < CONTINUANDO >')  #Muestra el contador
+                    imprimir_en_posicion(16, 90, '                 ')  #Limpia antes de mostrar
                     key_p = False
                 
             if not interrupted:      #Si no se interrumpio 
@@ -243,11 +243,10 @@ def console(elementos):
             #limpiar(16,100) #Limpia los terminados
         
         for row in range(9,15):
-            imprimir_en_posicion(row, 0, " "*15)  #Limpia las filas en ejecucion al terminar el programa
+            imprimir_en_posicion(row, 0, " "*30)  #Limpia las filas en ejecucion al terminar el programa
         limpiar(2,8)    #Limpia las filas en actuales
     imprimir_en_posicion(18+len(lis), 1, '') #"Posiciona el cursor" para que se imprima al final del programa
     end = True
-    print('Press Enter to finish')
 
 def key():  #Key thread
     global key_i,key_e,key_p,key_c,end
@@ -262,8 +261,8 @@ def key():  #Key thread
         if event.event_type == keyboard.KEY_DOWN and event.name == 'p':
             #print("PAUSE")
             key_p = True
-        if event.event_type == keyboard.KEY_DOWN and event.name == 'enter':
-            print("<Finished process>")
+        #if event.event_type == keyboard.KEY_DOWN and event.name == 'enter':
+            #print("<Finished process>")
     
 def main():
     subkey = threading.Thread(target=key) #Key thread
