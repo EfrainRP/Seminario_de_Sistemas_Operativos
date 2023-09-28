@@ -84,23 +84,18 @@ def console(elementos):
             if pos_fila == 11: #Primer bloqueado
                 index_id = 0 #TT del proceso
                 index = 1 #ID process
-                pos = 0
             elif pos_fila == 12: #Segundo bloqueado
                 index_id = 2 #TT del proceso
                 index = 3 #ID process
-                pos = 3
             elif pos_fila == 13: #Tercer bloqueado
                 index_id = 4 #TT del proceso
                 index = 5 #ID process
-                pos = 4
             elif pos_fila == 14: #Cuarto bloqueado
                 index_id = 6 #TT del proceso
                 index = 7 #ID process
-                pos = 5
             else:           #Quinto bloqueado
                 index_id = 8  #TT del proceso
                 index = 9 #ID process
-                pos = 6
             while TT != 8:  #Tiemp de 8 seg
                 pausa.wait() #Detiene temporalmente al subproceso
                 TT += 1
@@ -113,8 +108,8 @@ def console(elementos):
             if TT == 8:  #Si transcurren 8 seg
                 #imprimir_en_posicion(18, 80, f' < Proceso añadido {proceso} >')  #Muestra el proceso añadido
                 grupito.append(proceso)
-                bloqueados[index] = 0 #Reinicia el tiempo de bloqueo para un nuevo bloqueado
-                
+                bloqueados[index] = 0 #Valores TT default
+                bloqueados[index_id] = 0 #Valores ID default
                 limpiar(3,8)    #Limpia las filas en actuales
                 fila = 3
                 for element in grupito:       #Actualiza el actual grupo de procesos
