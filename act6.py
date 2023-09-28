@@ -8,7 +8,7 @@ key_p = False
 class Process:
     def __init__(self,id):
         self.process_id = id    #ID
-        self.time = random.randint(20, 40)  #TME
+        self.time = random.randint(8, 16)  #TME
         self.time_arrival = 0 #Time of Arrival
         self.completion_time = 0 #Completion Time
         self.return_time = 0  #Return time
