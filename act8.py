@@ -8,16 +8,17 @@ key_n = False
 key_b = False
 
 class Process:
-    def __init__(self,id,time_A=0):
+    def __init__(self,id):
         self.process_id = id    #ID
         self.time = random.randint(20, 40)  #TME
         self.time_arrival = 0 #Time of Arrival
-        self.completion_time = time_A #Completion Time
+        self.completion_time = 0 #Completion Time
         self.return_time = 0  #Return time
         self.response_time = 0  #Response time
         self.band_response = False  #Band response time
         self.wait_time = 0 #Wait time 
         self.time_run = 0   #Time running = TT
+        self.blocked_time = 0 #Blocked time
 
         result,self.opString = self._operation()  #OperationStr
         self.result = round(result,4)   #Result
@@ -54,7 +55,7 @@ class Process:
             return result,f'{op1} % {op2}'
     
     def print(self): #Regresa los tributos como cadena
-        return f'ID: {self.process_id} TME: {self.time} TT : {self.time_run} {self.opString} = {self.result} TL : {self.time_arrival} TF : {self.completion_time} TR : {self.return_time} TRES : {self.response_time} TW : {self.wait_time} BAND : {self.band_response}'
+        return f'ID: {self.process_id} TME: {self.time} TT : {self.time_run} {self.opString} = {self.result} TL : {self.time_arrival} TF : {self.completion_time} TR : {self.return_time} TRES : {self.response_time} TW : {self.wait_time} BAND : {self.band_response} BT : {self.blocked_time}'
 
 
 #---------------------------------------------------------------------------------------------------------
@@ -63,14 +64,15 @@ class Process:
 
 
 def console(elementos):
-    global key_i,key_e,key_p,end,key_n,process,key_b
+    global key_i,key_e,key_p,end,key_n,process,key_b,new
     lis = []      #Procesos Terminados
     contador = 0  #Contador global
     grupito = []  #Grupo de 5 procesos
     count = 0     #Process Count
     process = len(elementos) #Processes
     pos_fila = 11 #pos_fila process
-    bloqueados = [] #Procesos Bloqueados (lista de tuplas)
+    bloqueados = [(0),(0),(0),(0),(0)] #Procesos Bloqueados
+    
     
     
 
@@ -83,40 +85,39 @@ def console(elementos):
             return input_string
         
     def bloqueado(proceso,pos_fila):   #Estado bloqueado
+            global new
             TT = 0
             if pos_fila == 11: #Primer bloqueado
-                index_id = 0 #TT del proceso
-                index = 1 #ID process
-                pos = 0
+                index = 0 #ID process
             elif pos_fila == 12: #Segundo bloqueado
-                index_id = 2 #TT del proceso
-                index = 3 #ID process
-                pos = 3
+                index = 1 #ID process
+                
             elif pos_fila == 13: #Tercer bloqueado
-                index_id = 4 #TT del proceso
-                index = 5 #ID process
-                pos = 4
+                index = 2 #ID process
             elif pos_fila == 14: #Cuarto bloqueado
-                index_id = 6 #TT del proceso
-                index = 7 #ID process
-                pos = 5
+                index = 3 #ID process
             else:           #Quinto bloqueado
-                index_id = 8  #TT del proceso
-                index = 9 #ID process
-                pos = 6
+                index = 4 #ID process
             while TT != 8:  #Tiemp de 8 seg
                 pausa.wait() #Detiene temporalmente al subproceso
                 TT += 1
-                bloqueados[index_id] = (proceso,TT) #ID process
-                #bloqueados[index] = TT #Contador actual del proceso bloqueado
-                imprimir_en_posicion(pos_fila, 90, f'\t\t>ID: {proceso.process_id} TT-->{TT} ')
+                proceso.blocked_time = TT
+                bloqueados[index] = proceso #Contador actual del proceso bloqueado
+                imprimir_en_posicion(pos_fila, 90, f'\t\t>ID: {proceso.process_id} TT-->{proceso.blocked_time} ')
                 #imprimir_en_posicion(pos, 70, f' < TT {bloqueados[index]} > ')  
                 time.sleep(0.5)
             imprimir_en_posicion(pos_fila, 90, f'\t\t                                ') #Limpiar
             if TT == 8:  #Si transcurren 8 seg
                 #imprimir_en_posicion(18, 80, f' < Proceso añadido {proceso} >')  #Muestra el proceso añadido
-                grupito.append(proceso)
-                bloqueados[index] = 0 #Reinicia el tiempo de bloqueo para un nuevo bloqueado
+                proceso.blocked_time = 0 #Reinicia el contador de bloqueado 
+                if len(grupito) > 3: #Si el grupo ya es mayor o = 5
+                    new += 1
+                    elementos.append(proceso)
+                    imprimir_en_posicion(0, 80, f' < N° Procesos nuevos: {new} > ') #Imprime 
+                    limpiar(3,8)    #Limpia las filas en actuales
+                else:
+                    grupito.append(proceso)
+                bloqueados[index] = (0) #Reinicia el tiempo de bloqueo para un nuevo bloqueado
                 
                 limpiar(3,8)    #Limpia las filas en actuales
                 fila = 3
@@ -136,44 +137,39 @@ def console(elementos):
                     os.system('cls')
                     imprimir_en_posicion(0, 30, '\t\t\t  < Tabla de Procesos > ')
                     imprimir_en_posicion(2, 0, '-------------------- < Nuevos > --------------------')
-                    imprimir_en_posicion(3, 0, '>ID\t\t>TME\t\tOperación\t\tTT\t\tTE')
+                    imprimir_en_posicion(3, 0, '>ID\t\t>TME\t\t\tOperación')
                     table_row = 4
                     for nuevo in elementos:  #Nuevos 
-                        imprimir_en_posicion(table_row, 1, f'{nuevo.process_id}\t\t{nuevo.time}\t\t{nuevo.opString}\t\t{nuevo.time_run}\t\t{nuevo.wait_time}') 
+                        imprimir_en_posicion(table_row, 1, f'{nuevo.process_id}\t\t{nuevo.time}\t\t\t{nuevo.opString}') 
                         table_row += 1
                     imprimir_en_posicion(table_row, 0, '-------------------- < Listos > --------------------')
                     table_row += 1
-                    imprimir_en_posicion(table_row, 0, '>ID\t\t>TME\t\tOperación\t\tTL\t\tTT\t\tTE')
+                    imprimir_en_posicion(table_row, 0, '>ID\t\t>TME\t\t\tOperación\t\tTL\t\tTS\t\tTE\t\tTRES')
                     table_row += 1
                     for element in grupito:
                         wait_tim = (contador-element.time_run) #Tiempo de espera actual
-                        imprimir_en_posicion(table_row, 1, f'{element.process_id}\t\t{element.time}\t\t{element.opString}\t\t{element.time_arrival}\t\t{element.time_run}\t\t{wait_tim}') 
+                        imprimir_en_posicion(table_row, 1, f'{element.process_id}\t\t{element.time}\t\t\t{element.opString}\t\t{element.time_arrival}\t\t{element.time_run}\t\t{wait_tim}\t\t{element.response_time}') 
                         table_row +=1 
                     imprimir_en_posicion(table_row, 0, '-------------------- < Ejecución > --------------------')
                     table_row += 1
-                    imprimir_en_posicion(table_row, 0, '>ID\t\t>TME\t\tOperación\t\tTL\t\tTT\t\tTE')
+                    imprimir_en_posicion(table_row, 0, '>ID\t\t>TME\t\t\tOperación\t\tTL\t\tTS\t\tTE\t\tTRES')
                     table_row += 1
-                    if bloqueados[9] == 0: #Si todos los procesos estan en bloqueados
-                        wait_tim = (contador-ejecucion.time_run) #Tiempo de espera actual
-                        imprimir_en_posicion(table_row, 0, f'{ejecucion.process_id}\t\t{ejecucion.time}\t\t{ejecucion.opString}\t\t{ejecucion.time_arrival}\t\t{ejecucion.time_run}\t\t{wait_tim}')
-                        table_row += 1
-                    else:  #No se muestra el de ejecucion
-                        #wait_tim = (contador-ejecucion.time_run) #Tiempo de espera actual
-                        imprimir_en_posicion(table_row, 0, f' '*30)
-                        table_row += 1
+                    wait_tim = (contador-ejecucion.time_run) #Tiempo de espera actual
+                    imprimir_en_posicion(table_row, 0, f'{ejecucion.process_id}\t\t{ejecucion.time}\t\t\t{ejecucion.opString}\t\t{ejecucion.time_arrival}\t\t{ejecucion.time_run}\t\t{wait_tim}\t\t{ejecucion.response_time}')
+                    if bloqueados[4] != 0 and bloqueados[3] != 0 and bloqueados[2] != 0 and bloqueados[1] != 0 and bloqueados[4] != 0:
+                        imprimir_en_posicion(table_row, 0, f' '*300)
+                    table_row += 1
+                    #imprimir_en_posicion(10, 90, f'{bloqueados}')
                     imprimir_en_posicion(table_row, 0, '-------------------- < Bloqueados > --------------------')
                     table_row += 1
-                    imprimir_en_posicion(table_row, 0, '>ID\t\tRestante\t\tTS\t\tTE\t\tTR')
+                    imprimir_en_posicion(table_row, 0, '>ID\t\tRestante\t\tOperación\t\tTL\t\tTS\t\tTE\t\tTRES')
                     table_row += 1
-                    pos = 1 #Bloqueado Pos
                     total_TT = 8 #Maximo transcurrido
                     for blocked in bloqueados:
-                        if pos % 2 == 0:
-                            imprimir_en_posicion(table_row, 1, f'{blocked[0].process_id}\t\t{total_TT-blocked[0].time}\t\t{blocked[0].time_run}\t\t{blocked[0].wait_time}\t\t{blocked[0].response_time}')
+                        if blocked != 0:
+                            wait_tim = (contador-blocked.time_run) #Tiempo de espera actual
+                            imprimir_en_posicion(table_row, 1, f'{blocked.process_id}\t\t{total_TT-blocked.blocked_time}\t\t\t{blocked.opString}\t\t{blocked.time_arrival}\t\t{blocked.time_run}\t\t{wait_tim}\t\t{blocked.response_time}')
                             table_row += 1
-                        else:
-                            blocked[0].process_id = blocked
-                        pos +=1
                     imprimir_en_posicion(table_row, 0, '-------------------- < Terminados > --------------------')
                     table_row += 1  
                     imprimir_en_posicion(table_row, 0, '>ID\t\t>Operacion\t\t\t>Resultado\tTL\tTF\tTR\tTRES\tTE\tTS')
@@ -187,11 +183,11 @@ def console(elementos):
                     os.system('cls')
                     imprimir_en_posicion(0, 80, f' < N° Procesos nuevos: {new} > ')
                     imprimir_en_posicion(0, 0, '-------------------------- < Listos > -------------------------')
-                    imprimir_en_posicion(2, 0, '>ID\t>TME\t>TT\t>TR')
+                    imprimir_en_posicion(2, 0, '>ID\t>TME\t>TT')
                     imprimir_en_posicion(2, 85, f' < Contador: {contador} >')  #Muestra el contador
                     fila_b = 3
                     for element in grupito:       #Actualiza la actual cola
-                        imprimir_en_posicion(fila_b, 0,f' {element.process_id}\t  {element.time}\t  {element.time_run}\t {element.response_time}')
+                        imprimir_en_posicion(fila_b, 0,f' {element.process_id}\t  {element.time}\t  {element.time_run}')
                         fila_b += 1
                     imprimir_en_posicion(8, 0, '-------------------- < Proceso en ejecución > --------------------')
                     imprimir_en_posicion(9, 0, f'                                       ')
@@ -329,14 +325,14 @@ def console(elementos):
                     key_p = False
                 if key_n == True:
                     process +=1
-                    new_process = (Process(process,contador)) #Crea un nuevo proceso 
-                    new_process.time_arrival=contador
+                    new_process = (Process(process)) #Crea un nuevo proceso 
+                    new_process.time_arrival = contador          
                     if len(elementos) != 0: #Si aun hay procesos nuevos 
                         elementos.append(new_process) #Agrega a nuevos
                         new += 1
                     else:                   #Si no hay procesos nuevos
-                        if len(grupito) < 4:        #Si hay menos de 5 procesos en cola
-                            grupito.append(new_process) #Agrega a la cola
+                        if len(grupito) < 4 and bloqueados[0] == 0:        #Si hay menos de 5 procesos en cola
+                                grupito.append(new_process) #Agrega a la cola
                         else: #Si hay mas de 5 procesos en la cola
                             elementos.append(new_process) #Agrega a nuevos
                             new += 1
@@ -425,7 +421,7 @@ def main():
     os.system('cls')
     listProcess = []
     for count_process in range(1,process+1):
-        listProcess.append(Process(count_process,0))
+        listProcess.append(Process(count_process))
 
     #print(listProcess)
     
