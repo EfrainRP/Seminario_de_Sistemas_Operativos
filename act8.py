@@ -214,7 +214,7 @@ def console(elementos):
                         imprimir_en_posicion(fila_term_b, 1, f'{idString}\t{operationString}\t{resultString}\t\t\t{time_arrival}\t{completion_time}\t{return_time}\t{response_time}\t{wait_time}\t{time_run}')
                         fila_term_b += 1
                     pausa.set()   #Despausa los subprocesos
-                    imprimir_en_posicion(10, 90, f'\t\t< CONTINUANDO >')  #Muestra el contador
+                    imprimir_en_posicion(7, 90, f'\t\t< CONTINUANDO >')  #Muestra el contador
                     imprimir_en_posicion(8, 90, '                                       ')  
         
     if len(elementos) > 5: #Procesos mayores a 5
@@ -244,16 +244,16 @@ def console(elementos):
                 time.sleep(0.5)
                 if key_p == True:
                 #if keyboard.is_pressed('p'):  # Verifica si la tecla "p" ha sido presionada
-                    imprimir_en_posicion(10, 90, '                                      ')  #Limpia antes de mostrar
+                    imprimir_en_posicion(7, 90, '                                      ')  #Limpia antes de mostrar
                     imprimir_en_posicion(8, 90, '                                      ')  #Limpia antes de mostrar
-                    imprimir_en_posicion(8, 90, f'\t\t< PAUSA >')  #Muestra el contador
+                    imprimir_en_posicion(7, 90, f'\t\t< PAUSA >')  #Muestra el contador
                     #imprimir_en_posicion(16, 90, f'\t\t{bloqueados}')  #Imprime
                     
                     pausa.clear()  #Pausa los subprocesos
                     keyboard.wait("c") #Espera una "c"
                     pausa.set()    #Despausa los subprocesos
-                    imprimir_en_posicion(10, 90, f'\t\t< CONTINUANDO >')  #Muestra el contador
-                    imprimir_en_posicion(8, 90, '                                       ')  #Limpia antes de mostrar
+                    imprimir_en_posicion(7, 90, '                                       ')  #Limpia antes de mostrar
+                    imprimir_en_posicion(7, 90, f'\t\t< CONTINUANDO >')  #Muestra el contador
                     key_p = False
                 if key_b == True:
                     tecla_b()
@@ -300,8 +300,8 @@ def console(elementos):
                         pos_fila = 11
                     else:
                         pos_fila += 1
-                    imprimir_en_posicion(10, 90, ' '*40)  #Limpia antes de mostrar
-                    imprimir_en_posicion(10, 90, f'\t\t< BLOQUEADO >')  #Muestra el contador
+                    imprimir_en_posicion(9, 90, ' '*40)  #Limpia antes de mostrar
+                    imprimir_en_posicion(9, 90, f'\t\t< BLOQUEADO >')  #Muestra el contador
                     #elementos.append(ejecucion)
                     interrupted = True
                     key_i = False
@@ -314,15 +314,17 @@ def console(elementos):
                     break
                 if key_p == True:
                     #if keyboard.is_pressed('p'):  # Verifica si la tecla "p" ha sido presionada
+                    imprimir_en_posicion(7, 90, ' '*40)  #Limpia antes de mostrar
                     imprimir_en_posicion(8, 90, ' '*40)  #Limpia antes de mostrar
-                    imprimir_en_posicion(10, 90, ' '*40)  #Limpia antes de mostrar
-                    imprimir_en_posicion(8, 90, f'\t\t< PAUSA >')  #Muestra el contador
+                    #imprimir_en_posicion(10, 90, ' '*40)  #Limpia antes de mostrar
+                    imprimir_en_posicion(7, 90, f'\t\t< PAUSA >')  #Muestra el contador
                     #imprimir_en_posicion(16, 90, f'\t\t{bloqueados}')  #Imprime
                     pausa.clear() #Pausa los subprocesos
                     keyboard.wait("c") #Espera una "c"
                     pausa.set()   #Despausa los subprocesos
-                    imprimir_en_posicion(10, 90, f'\t\t< CONTINUANDO >')  #Muestra el contador
-                    imprimir_en_posicion(8, 90, '                                       ')  #Limpia antes de mostrar
+                    imprimir_en_posicion(7, 90, ' '*40)  #Limpia antes de mostrar
+                    imprimir_en_posicion(7, 90, f'\t\t< CONTINUANDO >')  #Muestra el contador
+                    imprimir_en_posicion(8, 90, ' '*40)  #Limpia antes de mostrar
                     key_p = False
                 if key_n == True:
                     process +=1
