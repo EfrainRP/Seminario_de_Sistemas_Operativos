@@ -135,10 +135,11 @@ def console(elementos):
                     os.system('cls')
                     imprimir_en_posicion(0, 30, '\t\t\t  < Tabla de Procesos > ')
                     imprimir_en_posicion(3, 0, '-------------------- < Nuevos > --------------------')
-                    imprimir_en_posicion(4, 0, '>ID\t>TME\t>Operación')
+                    imprimir_en_posicion(4, 0, '>ID\t>TME\t>Operación\t\t\t\tTL\tTS\tTE')
                     table_row = 5
                     for nuevo in elementos:  #Nuevos 
-                        imprimir_en_posicion(table_row, 1, f'{resize_string(" "+str(nuevo.process_id),4)}\t{resize_string(" "+str(nuevo.time),4)}\t{resize_string(" "+str(nuevo.opString),15)}') 
+                        wait_tim = (contador-nuevo.time_run) #Tiempo de espera actual
+                        imprimir_en_posicion(table_row, 1, f'{resize_string(" "+str(nuevo.process_id),4)}\t{resize_string(" "+str(nuevo.time),4)}\t{resize_string(" "+str(nuevo.opString),15)}\t\t\t\t{resize_string(" "+str(nuevo.time_arrival),4)}\t{resize_string(" "+str(nuevo.time_run),4)}\t{resize_string(" "+str(wait_tim),4)}') 
                         table_row += 1
                     table_row += 1
                     imprimir_en_posicion(table_row, 0, '-------------------- < Listos > -----------------------')
