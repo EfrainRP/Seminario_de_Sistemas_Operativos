@@ -27,14 +27,14 @@ subkey.start() #Key thread start
 cont = [] #Contenedor
 os.system('cls')
 
-producer_work = colored('< El productor esta trabajando . >',"green") #Estado trabajando
-consumer_work = colored('< El consumidor esta trabajando. >',"green") 
+producer_work = colored('< El productor esta trabajando . > ',"green") #Estado trabajando
+consumer_work = colored('< El consumidor esta trabajando. > ',"green") 
 
-producer_sleep = colored('< El productor esta durmiendo . >',"red")  #Estado durmiendo
-consumer_sleep = colored('< El consumidor esta durmiendo. >',"red")
+producer_sleep = colored('< El productor esta durmiendo . > ',"red")  #Estado durmiendo
+consumer_sleep = colored('< El consumidor esta durmiendo. > ',"red")
 
-producer_try = colored('< El productor intentó producir . >',"yellow") #Estado esperando
-consumer_try = colored('< El consumidor intentó consumir. >',"yellow")
+producer_try = colored('< El productor intentó producir . > ',"yellow") #Estado esperando
+consumer_try = colored('< El consumidor intentó consumir. > ',"yellow")
 
 colum = 2 #Producidos
 pos = 2 #Consumidos
@@ -50,7 +50,7 @@ while not exit:
         imprimir_en_posicion(6,70, producer_work)
         imprimir_en_posicion(7,70, consumer_sleep)
         producidos = 0
-        for i in range(productor): #Elementos a producir 
+        while (producidos < productor): #Elementos a producir 
             if exit:
                 break
             elif  len(cont) == 20: #Si el contenedor (buffer) esta lleno, no se puede producir 
@@ -79,7 +79,7 @@ while not exit:
         imprimir_en_posicion(6,70, producer_sleep)
         imprimir_en_posicion(7,70, consumer_work)
         consumidos  = 0
-        for i in range(consumidor): #Elementos a consumir 
+        while (consumidos < consumidor): #Elementos a consumir 
             if exit:
                 break
             elif len(cont) == 0: #Si el contenedor (buffer) esta vacío, no se puede consumir 
