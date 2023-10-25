@@ -81,7 +81,15 @@ def console(elementos):
             return input_string + ' ' * (new_size - len(input_string)) #Fill out the input_string to have new len of string
         else:
             return input_string
-        
+    
+    def cantOcupados(): #Funcion de validacion de arreglo de bloqueados
+        vacio=0
+        for b in bloqueados:
+            if b == 0:
+                vacio +=1
+        ocupados = 5-vacio
+        return ocupados
+            
     def bloqueado(proceso,pos_fila):   #Estado bloqueado
             global new
             TT = 0
@@ -108,13 +116,13 @@ def console(elementos):
             if TT == 8:  #Si transcurren 8 seg
                 #imprimir_en_posicion(18, 80, f' < Proceso añadido {proceso} >')  #Muestra el proceso añadido
                 proceso.blocked_time = 0 #Reinicia el contador de bloqueado 
-                if len(grupito) > 3: #Si el grupo ya es mayor o = 5
+                '''if len(grupito) > 3: #Si el grupo ya es mayor o = 5
                     new += 1
                     elementos.append(proceso)
                     imprimir_en_posicion(0, 80, f' < N° Procesos nuevos: {new} > ') #Imprime 
                     limpiar(3,8)    #Limpia las filas en actuales
-                else:
-                    grupito.append(proceso)
+                else:'''
+                grupito.append(proceso)
                 bloqueados[index] = (0) #Reinicia el tiempo de bloqueo para un nuevo bloqueado
                 
                 limpiar(3,8)    #Limpia las filas en actuales
@@ -259,6 +267,24 @@ def console(elementos):
                 if key_b == True:
                     tecla_b()
                     key_b = False
+                if key_n == True:
+                    process+=1
+                    new_process = (Process(process)) #Crea un nuevo proceso 
+                    new_process.time_arrival = contador          
+
+                    if (cantOcupados() + len(grupito)) < 4 :        #Si hay menos de 5 procesos en cola
+                        if len(grupito) < 4:
+                            grupito.append(new_process) #Agrega a la cola
+                        else:
+                            elementos.append(new_process)
+                            new += 1 
+                            
+                    else: #Si hay mas de 5 procesos en la cola
+                        elementos.append(new_process) #Agrega a nuevos
+                        new += 1 
+                    imprimir_en_posicion(0, 80, f' < N° Procesos nuevos: {new} > ') #Imprime 
+                    
+                    key_n = False
                 continue
             else:
                 ejecucion = grupito.pop(0) #Sino, obtiene el mas reciente del grupito para mostrar
@@ -328,18 +354,29 @@ def console(elementos):
                     imprimir_en_posicion(8, 90, ' '*40)  #Limpia antes de mostrar
                     key_p = False
                 if key_n == True:
-                    process +=1
+                    process+=1
                     new_process = (Process(process)) #Crea un nuevo proceso 
-                    new_process.time_arrival = contador          
-                    if len(elementos) != 0: #Si aun hay procesos nuevos 
+                    new_process.time_arrival = contador      
+                    if (cantOcupados() + len(grupito)) < 4 :        #Si hay menos de 5 procesos en cola
+                        if len(grupito) < 4:
+                            grupito.append(new_process) #Agrega a la cola
+                        else:
+                            elementos.append(new_process)
+                            
+                    else: #Si hay mas de 5 procesos en la cola
+                        elementos.append(new_process) #Agrega a nuevos
+                        new += 1    
+                    '''if len(elementos) != 0: #Si aun hay procesos nuevos 
                         elementos.append(new_process) #Agrega a nuevos
                         new += 1
                     else:                   #Si no hay procesos nuevos
-                        if len(grupito) < 4 and bloqueados[0] == 0:        #Si hay menos de 5 procesos en cola
-                                grupito.append(new_process) #Agrega a la cola
+                        if len(grupito) < 5 and bloqueados[0] == 0:        #Si hay menos de 5 procesos en cola
+                            grupito.append(new_process) #Agrega a la cola
+                            new += 1
+                            
                         else: #Si hay mas de 5 procesos en la cola
                             elementos.append(new_process) #Agrega a nuevos
-                            new += 1
+                            new += 1'''
                     imprimir_en_posicion(0, 80, f' < N° Procesos nuevos: {new} > ') #Imprime 
                     limpiar(3,8)    #Limpia las filas en actuales
                     fila = 3
