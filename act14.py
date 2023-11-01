@@ -1,4 +1,5 @@
 import math,re,time,random,keyboard,os, threading
+from termcolor import colored
 pausa = threading.Event()
 end = False #END Thread
 key_i = False
@@ -66,11 +67,12 @@ class Process:
 def console(elementos,quantum):
     global key_i,key_e,key_p,end,key_n,process,key_b,new
     lis = []      #Procesos Terminados
+    memory = 45   #System memory 
     contador = 0  #Contador global
     grupito = []  #Grupo de 5 procesos
     count = 0     #Process Count
     process = len(elementos) #Processes
-    pos_fila = 11 #pos_fila process
+    pos_fila = 3 #pos_fila process
     bloqueados = [(0),(0),(0),(0),(0)] #Procesos Bloqueados
     quantum_time = quantum
     
@@ -87,14 +89,14 @@ def console(elementos,quantum):
     def bloqueado(proceso,pos_fila):   #Estado bloqueado
             global new
             TT = 0
-            if pos_fila == 11: #Primer bloqueado
+            if pos_fila == 3: #Primer bloqueado
                 index = 0 #ID process
-            elif pos_fila == 12: #Segundo bloqueado
+            elif pos_fila == 4: #Segundo bloqueado
                 index = 1 #ID process
                 
-            elif pos_fila == 13: #Tercer bloqueado
+            elif pos_fila == 5: #Tercer bloqueado
                 index = 2 #ID process
-            elif pos_fila == 14: #Cuarto bloqueado
+            elif pos_fila == 6: #Cuarto bloqueado
                 index = 3 #ID process
             else:           #Quinto bloqueado
                 index = 4 #ID process
@@ -103,23 +105,22 @@ def console(elementos,quantum):
                 TT += 1
                 proceso.blocked_time = TT
                 bloqueados[index] = proceso #Contador actual del proceso bloqueado
-                imprimir_en_posicion(pos_fila, 90, f'\t\t>ID: {proceso.process_id} TT-->{proceso.blocked_time} ')
+                imprimir_en_posicion(pos_fila, 35, f'\t\t>ID: {proceso.process_id} TT-->{proceso.blocked_time} ')
+                
                 #imprimir_en_posicion(pos, 70, f' < TT {bloqueados[index]} > ')  
                 time.sleep(0.5)
-            imprimir_en_posicion(pos_fila, 90, f'\t\t                                ') #Limpiar
+            imprimir_en_posicion(pos_fila, 35, f' '*30) #Limpiar
             if TT == 8:  #Si transcurren 8 seg
                 #imprimir_en_posicion(18, 80, f' < Proceso añadido {proceso} >')  #Muestra el proceso añadido
                 proceso.blocked_time = 0 #Reinicia el contador de bloqueado 
                 if len(grupito) > 3: #Si el grupo ya es mayor o = 5
                     new += 1
                     elementos.append(proceso)
-                    imprimir_en_posicion(0, 80, f' < N° Procesos nuevos: {new} > ') #Imprime 
-                    limpiar(3,8)    #Limpia las filas en actuales
+                    imprimir_en_posicion(10, 30, f' < N° Procesos nuevos: {new} > ') #Imprime 
+                    #limpiar(3,8)    #Limpia las filas en actuales
                 else:
                     grupito.append(proceso)
-                bloqueados[index] = (0) #Reinicia el tiempo de bloqueo para un nuevo bloqueado
-                
-                limpiar(3,8)    #Limpia las filas en actuales
+                bloqueados[index] = (0) #Reinicia el tiempo de bloqueo para un nuevo bloquead
                 fila = 3
                 for element in grupito:       #Actualiza el actual grupo de procesos
                     imprimir_en_posicion(fila, 0,f' {element.process_id}\t  {element.time}\t  {element.time_run}')
@@ -181,15 +182,15 @@ def console(elementos,quantum):
                     pausa.clear() #Pausa los subprocesos
                     keyboard.wait("c") #Espera una "c"
                     os.system('cls')
-                    imprimir_en_posicion(0, 80, f' < N° Procesos nuevos: {new} > ')
+                    imprimir_en_posicion(10, 30, f' < N° Procesos nuevos: {new} > ')
                     imprimir_en_posicion(0, 0, '-------------------------- < Listos > -------------------------')
                     imprimir_en_posicion(2, 0, '>ID\t>TME\t>TT')
-                    imprimir_en_posicion(2, 85, f' < Contador: {contador} >')  #Muestra el contador
+                    imprimir_en_posicion(11, 35, f' < Contador: {contador} >')  #Muestra el contador
                     fila_b = 3
                     for element in grupito:       #Actualiza la actual cola
                         imprimir_en_posicion(fila_b, 0,f' {element.process_id}\t  {element.time}\t  {element.time_run}')
                         fila_b += 1
-                    imprimir_en_posicion(8, 0, '-------------------- < Proceso en ejecución > --------------------')
+                    imprimir_en_posicion(8, 0, '-------------------- < Proceso en ejecución > -----------------')
                     imprimir_en_posicion(9, 0, f'                                       ')
                     imprimir_en_posicion(10, 0, f'-ID: {ejecucion.process_id}')
                     imprimir_en_posicion(11, 0, f'-Operacion-> {ejecucion.opString}')
@@ -197,7 +198,7 @@ def console(elementos,quantum):
                     imprimir_en_posicion(13, 0, f'-Tiempo TRA: {ejecucion.time_run}            ')
                     imprimir_en_posicion(14, 0, '                 ')  #Limpia antes de mostrar
                     imprimir_en_posicion(14, 0, f'-Tiempo RES: {ejecucion.time-ejecucion.time_run}        ')
-                    imprimir_en_posicion(16, 1, '------------------------- < Terminados > --------------------------')
+                    imprimir_en_posicion(16, 1, '------------------------- < Terminados > ----------------------')
                     imprimir_en_posicion(17, 1, '>ID\t\t>Operacion\t\t\t>Resultado\tTL\tTF\tTR\tTRES\tTE\tTS')
                     fila_term_b = 18       
                     for terminados in lis:   #Muestra cada uno de los procesos terminados
@@ -233,27 +234,51 @@ def console(elementos,quantum):
         #-------------------------------------------------------------------------------
         while count != process:               #Se muestra cada elemento del grupo
             interrupted = False
-            imprimir_en_posicion(0, 80, f' < N° Procesos nuevos: {new} > ')
+            #Se imprime la estructura de la paginacion
+            imprimir_en_posicion(0, 65, f'\033[32mMarco\033[0m   Size    ID     EST')
+            imprimir_en_posicion(0, 100, f'\033[32mMarco\033[0m   Size    ID     EST')
+            imprimir_en_posicion(0, 135, f'\033[32mMarco\033[0m   Size    ID     EST')
+            for i in range(1,memory): #IMP Paginacion 
+                if i <= 15:
+                    if i <= 9:
+                        imprimir_en_posicion(i+1, 65, f'\033[33m|0{i}|\033[0m    {1}/5     {1}      Eje     \033[32m|\033[0m') #Marco 1-9
+                    else:
+                        imprimir_en_posicion(i+1, 65, f'\033[33m|{i}|\033[0m    {1}/5     {1}      Eje     \033[32m|\033[0m') #Marco 10-15
+                elif i > 15 and i <= 30:
+                    imprimir_en_posicion(i-14, 100, f'\033[33m|{i}|\033[0m    {1}/5     {1}      Nue     \033[32m|\033[0m') #Marco 16-30
+                else:
+                    if i > 40:
+                        imprimir_en_posicion(i-28, 135, f'\033[33m|{i}|\033[0m    0/5     S/D    S.O     \033[32m|\033[0m') #S.O Recerved = Marco 41-44
+                    else:
+                        imprimir_en_posicion(i-28, 135, f'\033[33m|{i}|\033[0m    {1}/5     {1}      Lis     \033[32m|\033[0m') #Marco 31-40
+
+            imprimir_en_posicion(10, 30, f' < N° Procesos nuevos: {new} > ')
             imprimir_en_posicion(0, 0, '-------------------------- < Listos > -------------------------')
             imprimir_en_posicion(2, 0, '>ID\t>TME\t>TT')
             if len(grupito) == 0:      #Si el grupo esta vacio (todos estan bloqueados) no se muestra nada por consola
                 contador += 1
-                imprimir_en_posicion(2, 85, f' < Contador: {contador} >')  #Muestra el contador
-                imprimir_en_posicion(3, 85, f' < Quantum: {quantum_time} >')  #Muestra el contador
-                limpiar(9,15)   #Limpia las filas en ejecucion
+                imprimir_en_posicion(11, 35, f' < Contador: {contador} >')  #Muestra el contador
+                imprimir_en_posicion(12, 35, f' < Quantum: {quantum_time} >')  #Muestra el contador
+                imprimir_en_posicion(9, 0, f' '*25) #Limpiar
+                imprimir_en_posicion(10, 0, f' '*25) #Limpiar
+                imprimir_en_posicion(11, 0, f' '*25) #Limpiar
+                imprimir_en_posicion(12, 0, f' '*25) #Limpiar
+                imprimir_en_posicion(13, 0, f' '*25) #Limpiar
+                imprimir_en_posicion(14, 0, f' '*25) #Limpiar
+                imprimir_en_posicion(15, 0, f' '*25) #Limpiar
                 time.sleep(0.5)
                 if key_p == True:
                 #if keyboard.is_pressed('p'):  # Verifica si la tecla "p" ha sido presionada
-                    imprimir_en_posicion(10, 90, '                                      ')  #Limpia antes de mostrar
-                    imprimir_en_posicion(8, 90, '                                      ')  #Limpia antes de mostrar
-                    imprimir_en_posicion(8, 90, f'\t\t< PAUSA >')  #Muestra el contador
+                    #imprimir_en_posicion(10, 90, '                                      ')  #Limpia antes de mostrar
+                    imprimir_en_posicion(2, 35, '                                      ')  #Limpia antes de mostrar
+                    imprimir_en_posicion(2, 35, f'\t\t< PAUSA >')  #Muestra el contador
                     #imprimir_en_posicion(16, 90, f'\t\t{bloqueados}')  #Imprime
                     
                     pausa.clear()  #Pausa los subprocesos
                     keyboard.wait("c") #Espera una "c"
                     pausa.set()    #Despausa los subprocesos
-                    imprimir_en_posicion(10, 90, f'\t\t< CONTINUANDO >')  #Muestra el contador
-                    imprimir_en_posicion(8, 90, '                                       ')  #Limpia antes de mostrar
+                    imprimir_en_posicion(2, 35, f'\t\t< CONTINUANDO >')  #Muestra el contador
+                    #imprimir_en_posicion(8, 90, '                                       ')  #Limpia antes de mostrar
                     key_p = False
                 if key_b == True:
                     tecla_b()
@@ -265,7 +290,11 @@ def console(elementos,quantum):
                 if ejecucion.band_response == False:
                     ejecucion.response_time = (contador-ejecucion.time_arrival) #Tiempo de respuesta 
                     ejecucion.band_response = True
-            limpiar(3,8)    #Limpia las filas en actuales
+            imprimir_en_posicion(3, 0, f' '*20) #Limpiar
+            imprimir_en_posicion(4, 0, f' '*20) #Limpiar
+            imprimir_en_posicion(5, 0, f' '*20) #Limpiar
+            imprimir_en_posicion(6, 0, f' '*20) #Limpiar
+            imprimir_en_posicion(7, 0, f' '*20) #Limpiar
             fila = 3
             for element in grupito:       #Actualiza la actual cola
                 imprimir_en_posicion(fila, 0,f' {element.process_id}\t  {element.time}\t  {element.time_run}')
@@ -273,8 +302,12 @@ def console(elementos,quantum):
             '''if len(grupito) > 3: #Interrupcion para ver cuantos entran en el grupito (entran 4)
                 input(' ')'''
             #--------------------------------------------------------------------------------------------------------
-            limpiar(8,13)   #Limpia las filas en ejecucion
-            imprimir_en_posicion(8, 0, '-------------------- < Proceso en ejecución > --------------------')
+            #limpiar(8,13)   #Limpia las filas en ejecucion
+            imprimir_en_posicion(9, 0, f' '*20) #Limpiar
+            imprimir_en_posicion(10, 0, f' '*20) #Limpiar
+            imprimir_en_posicion(11, 0, f' '*20) #Limpiar
+            imprimir_en_posicion(12, 0, f' '*20) #Limpiar
+            imprimir_en_posicion(8, 0, '-------------------- < Proceso en ejecución > -----------------')
             imprimir_en_posicion(9, 0, f'                                       ')
             imprimir_en_posicion(10, 0, f'-ID: {ejecucion.process_id}')
             imprimir_en_posicion(11, 0, f'-Operacion-> {ejecucion.opString}')
@@ -290,7 +323,7 @@ def console(elementos,quantum):
                         elementos.append(ejecucion) #Agrega a nuevos
                         new += 1
                     quantum_time = quantum #Reinicia el quantum
-                    imprimir_en_posicion(0, 80, f' < N° Procesos nuevos: {new} > ') #Imprime 
+                    imprimir_en_posicion(10, 30, f' < N° Procesos nuevos: {new} > ') #Imprime 
                     limpiar(3,8)    #Limpia las filas en actuales
                     fila = 3
                     for element in grupito:       #Actualiza la actual cola
@@ -304,8 +337,8 @@ def console(elementos,quantum):
                 contador += 1
                 quantum_time -= 1
                 ejecucion.wait_time += 1
-                imprimir_en_posicion(2, 85, f' < Contador: {contador} >')  #Muestra el contador
-                imprimir_en_posicion(3, 85, f' < Quantum: {quantum_time} >')  #Muestra el contad
+                imprimir_en_posicion(11, 35, f' < Contador: {contador} >')  #Muestra el contador
+                imprimir_en_posicion(12, 35, f' < Quantum: {quantum_time} >')  #Muestra el contad
                 time.sleep(0.5)
                 if key_i == True:
                     #if keyboard.is_pressed('i'):  # Verifica si la tecla "e" ha sido presionada
@@ -314,12 +347,12 @@ def console(elementos,quantum):
                     t = threading.Thread(target=bloqueado, args=(ejecucion,pos_fila,)) #Subproceso bloqueados
                     t.start() 
                     pausa.set()
-                    if pos_fila == 15:  #Reinicio de bloqueados
-                        pos_fila = 11
+                    if pos_fila == 7:  #Reinicio de bloqueados
+                        pos_fila = 3
                     else:
                         pos_fila += 1
-                    imprimir_en_posicion(10, 90, '                                      ')  #Limpia antes de mostrar
-                    imprimir_en_posicion(8, 90, f'\t\t< BLOQUEADO >')  #Muestra el contador
+                    imprimir_en_posicion(2, 35, '                                      ')  #Limpia antes de mostrar
+                    imprimir_en_posicion(2, 35, f'\t\t< BLOQUEADO >')  #Muestra el contador
                     #elementos.append(ejecucion)
                     interrupted = True
                     key_i = False
@@ -333,15 +366,15 @@ def console(elementos,quantum):
                     break
                 if key_p == True:
                     #if keyboard.is_pressed('p'):  # Verifica si la tecla "p" ha sido presionada
-                    imprimir_en_posicion(8, 90, '                                      ')  #Limpia antes de mostrar
-                    imprimir_en_posicion(10, 90, '                                      ')  #Limpia antes de mostrar
-                    imprimir_en_posicion(8, 90, f'\t\t< PAUSA >')  #Muestra el contador
+                    #imprimir_en_posicion(8, 90, '                                      ')  #Limpia antes de mostrar
+                    imprimir_en_posicion(2, 35, '                                      ')  #Limpia antes de mostrar
+                    imprimir_en_posicion(2, 35, f'\t\t< PAUSA >')  #Muestra el contador
                     #imprimir_en_posicion(16, 90, f'\t\t{bloqueados}')  #Imprime
                     pausa.clear() #Pausa los subprocesos
                     keyboard.wait("c") #Espera una "c"
                     pausa.set()   #Despausa los subprocesos
-                    imprimir_en_posicion(10, 90, f'\t\t< CONTINUANDO >')  #Muestra el contador
-                    imprimir_en_posicion(8, 90, '                                       ')  #Limpia antes de mostrar
+                    imprimir_en_posicion(2, 35, f'\t\t< CONTINUANDO >')  #Muestra el contador
+                    #imprimir_en_posicion(8, 90, '                                       ')  #Limpia antes de mostrar
                     key_p = False
                 if key_n == True:
                     process +=1
@@ -356,7 +389,7 @@ def console(elementos,quantum):
                         else: #Si hay mas de 5 procesos en la cola
                             elementos.append(new_process) #Agrega a nuevos
                             new += 1
-                    imprimir_en_posicion(0, 80, f' < N° Procesos nuevos: {new} > ') #Imprime 
+                    imprimir_en_posicion(10, 30, f' < N° Procesos nuevos: {new} > ') #Imprime 
                     limpiar(3,8)    #Limpia las filas en actuales
                     fila = 3
                     for element in grupito:       #Actualiza la actual cola
@@ -373,7 +406,7 @@ def console(elementos,quantum):
                 ejecucion.return_time = (ejecucion.completion_time-ejecucion.time_arrival) #Tiempo de retorno
                 ejecucion.wait_time = (ejecucion.return_time-ejecucion.time_run) #Tiempo de espera
                 lis.append(ejecucion)
-                imprimir_en_posicion(16, 1, '------------------------- < Terminados > --------------------------')
+                imprimir_en_posicion(16, 1, '------------------------- < Terminados > ----------------------')
                 imprimir_en_posicion(17, 1, '>ID\t\t>Operacion\t\t\t>Resultado\tTL\tTF\tTR\tTRES\tTE\tTS')
                 count += 1
                 if len(elementos) != 0:
