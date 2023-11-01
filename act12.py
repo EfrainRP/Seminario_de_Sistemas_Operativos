@@ -27,14 +27,14 @@ subkey.start() #Key thread start
 cont = [] #Contenedor
 os.system('cls')
 
-producer_work = colored('< El productor esta trabajando . > ',"green") #Estado trabajando
-consumer_work = colored('< El consumidor esta trabajando. > ',"green") 
+producer_work = colored('< El productor esta trabajando. >       ',"green") #Estado trabajando
+consumer_work = colored('< El consumidor esta trabajando. >     ',"green") 
 
-producer_sleep = colored('< El productor esta durmiendo . > ',"red")  #Estado durmiendo
-consumer_sleep = colored('< El consumidor esta durmiendo. > ',"red")
+producer_sleep = colored('< El productor esta durmiendo. >      ',"red")  #Estado durmiendo
+consumer_sleep = colored('< El consumidor esta durmiendo. >     ',"red")
 
-producer_try = colored('< El productor intentó producir . > ',"yellow") #Estado esperando
-consumer_try = colored('< El consumidor intentó consumir. > ',"yellow")
+producer_try = colored('< El productor intentó producir. >      ',"yellow") #Estado esperando
+consumer_try = colored('< El consumidor intentó consumir. >     ',"yellow")
 
 colum = 2 #Producidos
 pos = 2 #Consumidos
