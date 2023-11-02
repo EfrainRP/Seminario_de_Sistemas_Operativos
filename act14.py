@@ -279,9 +279,7 @@ def console(elementos,quantum):
             initial = elementos.pop(0)
             initial.time_arrival = contador  #Tiempo de llegada de los primeros 5 procesos 
             grupito.append(initial)    
-            print("Values: ",initial.size,initial.process_id)
             ocuparMemoria(initial.size,initial.process_id,"Lis")
-            input('')
         new = process-5 #New Process
     else: #Procesos menores a 6
         for i in range(len(elementos)): #Toma todos lox procesos 
