@@ -78,10 +78,84 @@ def console(elementos,quantum):
     quantum_time = quantum
     
     for i in range(40): #Declaration Memory
-        memory.append([0,0,"---"])
+        memory.append([0,0,"---"]) #List = [Size,ID,State]
     
-    memory[20] = [1,1,"Nue"]
+    '''
+    #Ocupados
+    memory[2] = [15,1,"Blo"]
+    memory[3] = [20,2,"Eje"]
+    memory[5] = [16,3,"Lis"]
+    memory[17] = [8,4,"Eje"]
+    #Ocupa espacios en la memoria 
+    libres = 0
+    frames = math.ceil(17 / 5) #Cantidad de marcos a ocupar donde size es el tamaño de proceso
+    if((17 % 5) != 0): #Si el tamaño del ultimo frame es distinto a 5 (1-4/5)
+            frame = 17 % 5 
+    else:
+        frame = 5
+    for i in range(len(memory)):
+        if(memory[i][1] == 0):
+            libres += 1
+    print(libres)
+    if((libres - frames) >= 0): #Si el proceso cabe en memoria 
+        ocupados = 0 #Marcos ocupados 
+        for i in range(len(memory)): #Se recorre la memoria
+            if ocupados == frames: #Cuando se ocupe la cantidad esperada termina 
+                memory[i-1][0] = frame #Actualiza el tamaño de ultimo frame 
+                break
+            else:
+                if(memory[i][1] == 0):
+                    memory[i][0] = 5
+                    memory[i][1] = 9
+                    memory[i][2] = "MYS"
+                    ocupados += 1
+    libres = 0
+    for i in range(len(memory)):
+        if(memory[i][1] == 0):
+            libres += 1
+    print("Nuevos espacios ocupados: ",libres)
+    print(memory)                
+     #Desocupa espacios en la memoria 
+    for i in range(len(memory)): #Se recorre la memoria 
+        if(memory[i][1] == 5): #Se busca las coincidencias del ID en memoria del terminado para liberar espacio 
+            memory[i][0] = 0
+            memory[i][1] = 0
+            memory[i][2] = "---"
+    input('')
+    '''
    
+    def ocuparMemoria(size,id,state):
+        #Ocupa espacios en la memoria 
+        libres = 0
+        frames = math.ceil(size / 5) #Cantidad de marcos a ocupar donde size es el tamaño de proceso
+        if((size % 5) != 0): #Si el tamaño del ultimo frame es distinto a 5 (1-4/5)
+            frame = size % 5 
+        else:              #Todos los frames son del mismo tamaño (5/5)
+            frame = 5
+        for i in range(len(memory)): #Valida cuantos espacios libres hay en memoria 
+            if(memory[i][1] == 0):
+                libres += 1
+        #print(libres)
+        if((libres - frames) >= 0): #Si el proceso cabe en memoria (cantidad de frames)
+            ocupados = 0 #Marcos ocupados 
+            for i in range(len(memory)): #Se recorre la memoria
+                if ocupados == frames: #Cuando se ocupe la cantidad esperada termina 
+                    memory[i-1][0] = frame #Actualiza el tamaño de ultimo frame 
+                    break
+                else:
+                    if(memory[i][1] == 0):
+                        memory[i][0] = 5  #Size default
+                        memory[i][1] = id
+                        memory[i][2] = state
+                        ocupados += 1
+    
+    def desocuparMemoria(id):
+        #Desocupa espacios en la memoria 
+        for i in range(len(memory)): #Se recorre la memoria 
+            if(memory[i][1] == id): #Se busca las coincidencias del ID en memoria del terminado para liberar espacio 
+                memory[i][0] = 0
+                memory[i][1] = 0
+                memory[i][2] = "---"
     
     def paginacion(): #Paginacion 
             #Se imprime la estructura de la paginacion
@@ -91,16 +165,16 @@ def console(elementos,quantum):
             for i in range(1,45): #IMP Paginacion 
                 if i <= 15:
                     if i <= 9:
-                        imprimir_en_posicion(i+1, 65, f'\033[33m|0{i}|\033[0m    {1}/5     {1}      Eje     \033[32m|\033[0m') #Marco 1-9
+                        imprimir_en_posicion(i+1, 65, f'\033[33m|0{i}|\033[0m    {memory[i-1][0]}/5     {memory[i-1][1]}      {memory[i-1][2]}     \033[32m|\033[0m') #Marco 1-9
                     else:
-                        imprimir_en_posicion(i+1, 65, f'\033[33m|{i}|\033[0m    {1}/5     {1}      Eje     \033[32m|\033[0m') #Marco 10-15
+                        imprimir_en_posicion(i+1, 65, f'\033[33m|{i}|\033[0m    {memory[i-1][0]}/5     {memory[i-1][1]}      {memory[i-1][2]}     \033[32m|\033[0m') #Marco 10-15
                 elif i > 15 and i <= 30:
-                    imprimir_en_posicion(i-14, 100, f'\033[33m|{i}|\033[0m    {1}/5     {1}      Nue     \033[32m|\033[0m') #Marco 16-30
+                    imprimir_en_posicion(i-14, 100, f'\033[33m|{i}|\033[0m    {memory[i-1][0]}/5     {memory[i-1][1]}      {memory[i-1][2]}     \033[32m|\033[0m') #Marco 16-30
                 else:
                     if i > 40:
                         imprimir_en_posicion(i-28, 135, f'\033[33m|{i}|\033[0m    0/5     S/D    S.O     \033[32m|\033[0m') #S.O Recerved = Marco 41-44
                     else:
-                        imprimir_en_posicion(i-28, 135, f'\033[33m|{i}|\033[0m    {1}/5     {1}      Lis     \033[32m|\033[0m') #Marco 31-40
+                        imprimir_en_posicion(i-28, 135, f'\033[33m|{i}|\033[0m    {memory[i-1][0]}/5     {memory[i-1][1]}      {memory[i-1][2]}     \033[32m|\033[0m') #Marco 31-40
 
 
     def resize_string(input_string, new_size): #Resize string for table
@@ -241,12 +315,17 @@ def console(elementos,quantum):
                     pausa.set()   #Despausa los subprocesos
                     imprimir_en_posicion(10, 90, f'\t\t< CONTINUANDO >')  #Muestra el contador
                     imprimir_en_posicion(8, 90, '                                       ')  
-        
+    
+    
+    
     if len(elementos) > 5: #Procesos mayores a 5
         for i in range(5): #Toma los primeros 5 procesos 
             initial = elementos.pop(0)
             initial.time_arrival = contador  #Tiempo de llegada de los primeros 5 procesos 
             grupito.append(initial)    
+            print("Values: ",initial.size,initial.process_id)
+            ocuparMemoria(initial.size,initial.process_id,"Lis")
+            input('')
         new = process-5 #New Process
     else: #Procesos menores a 6
         for i in range(len(elementos)): #Toma todos lox procesos 
@@ -321,7 +400,7 @@ def console(elementos,quantum):
             imprimir_en_posicion(12, 0, f' '*25) #Limpiar
             imprimir_en_posicion(8, 0, '-------------------- < Proceso en ejecución > -----------------')
             imprimir_en_posicion(9, 0, f'                                       ')
-            imprimir_en_posicion(10, 0, f'-ID: {ejecucion.process_id}')
+            imprimir_en_posicion(10, 0, f'-ID: {ejecucion.process_id}       >Size: \033[32m{ejecucion.size}\033[0m')
             imprimir_en_posicion(11, 0, f'-Operacion-> {ejecucion.opString}')
             imprimir_en_posicion(12, 0, f'-Tiempo MXE: {ejecucion.time}')
             #TT = ejecucion.time_run
@@ -425,6 +504,7 @@ def console(elementos,quantum):
                 ejecucion.completion_time = contador  #Tiempo de finalizacion
                 ejecucion.return_time = (ejecucion.completion_time-ejecucion.time_arrival) #Tiempo de retorno
                 ejecucion.wait_time = (ejecucion.return_time-ejecucion.time_run) #Tiempo de espera
+                desocuparMemoria(ejecucion.process_id) #Desocupa todos los frames relacionados con el proceso que terminó
                 lis.append(ejecucion)
                 imprimir_en_posicion(16, 1, '------------------------- < Terminados > ----------------------')
                 imprimir_en_posicion(17, 1, '>ID\t\t>Operacion\t\t\t>Resultado\tTL\tTF\tTR\tTRES\tTE\tTS')
