@@ -20,6 +20,7 @@ class Process:
         self.wait_time = 0 #Wait time 
         self.time_run = 0   #Time running = TT
         self.blocked_time = 0 #Blocked time
+        self.size = random.randint(6, 26)  #Process Size
 
         result,self.opString = self._operation()  #OperationStr
         self.result = round(result,4)   #Result
@@ -56,7 +57,7 @@ class Process:
             return result,f'{op1} % {op2}'
     
     def print(self): #Regresa los tributos como cadena
-        return f'ID: {self.process_id} TME: {self.time} TT : {self.time_run} {self.opString} = {self.result} TL : {self.time_arrival} TF : {self.completion_time} TR : {self.return_time} TRES : {self.response_time} TW : {self.wait_time} BAND : {self.band_response} BT : {self.blocked_time}'
+        return f'ID: {self.process_id} TME: {self.time} TT : {self.time_run} {self.opString} = {self.result} TL : {self.time_arrival} TF : {self.completion_time} TR : {self.return_time} TRES : {self.response_time} TW : {self.wait_time} BAND : {self.band_response} BT : {self.blocked_time} SIZE : {self.size}'
 
 
 #---------------------------------------------------------------------------------------------------------
@@ -67,7 +68,7 @@ class Process:
 def console(elementos,quantum):
     global key_i,key_e,key_p,end,key_n,process,key_b,new
     lis = []      #Procesos Terminados
-    memory = 45   #System memory 
+    memory = []   #System memory 
     contador = 0  #Contador global
     grupito = []  #Grupo de 5 procesos
     count = 0     #Process Count
@@ -76,7 +77,31 @@ def console(elementos,quantum):
     bloqueados = [(0),(0),(0),(0),(0)] #Procesos Bloqueados
     quantum_time = quantum
     
+    for i in range(40): #Declaration Memory
+        memory.append([0,0,"---"])
     
+    memory[20] = [1,1,"Nue"]
+   
+    
+    def paginacion(): #Paginacion 
+            #Se imprime la estructura de la paginacion
+            imprimir_en_posicion(0, 65, f'\033[32mMarco\033[0m   Size    ID     EST') #Marcos columna 65
+            imprimir_en_posicion(0, 100, f'\033[32mMarco\033[0m   Size    ID     EST') #Marcos columna 100
+            imprimir_en_posicion(0, 135, f'\033[32mMarco\033[0m   Size    ID     EST') #Marcos columna 135
+            for i in range(1,45): #IMP Paginacion 
+                if i <= 15:
+                    if i <= 9:
+                        imprimir_en_posicion(i+1, 65, f'\033[33m|0{i}|\033[0m    {1}/5     {1}      Eje     \033[32m|\033[0m') #Marco 1-9
+                    else:
+                        imprimir_en_posicion(i+1, 65, f'\033[33m|{i}|\033[0m    {1}/5     {1}      Eje     \033[32m|\033[0m') #Marco 10-15
+                elif i > 15 and i <= 30:
+                    imprimir_en_posicion(i-14, 100, f'\033[33m|{i}|\033[0m    {1}/5     {1}      Nue     \033[32m|\033[0m') #Marco 16-30
+                else:
+                    if i > 40:
+                        imprimir_en_posicion(i-28, 135, f'\033[33m|{i}|\033[0m    0/5     S/D    S.O     \033[32m|\033[0m') #S.O Recerved = Marco 41-44
+                    else:
+                        imprimir_en_posicion(i-28, 135, f'\033[33m|{i}|\033[0m    {1}/5     {1}      Lis     \033[32m|\033[0m') #Marco 31-40
+
 
     def resize_string(input_string, new_size): #Resize string for table
         if new_size < len(input_string):
@@ -234,24 +259,7 @@ def console(elementos,quantum):
         #-------------------------------------------------------------------------------
         while count != process:               #Se muestra cada elemento del grupo
             interrupted = False
-            #Se imprime la estructura de la paginacion
-            imprimir_en_posicion(0, 65, f'\033[32mMarco\033[0m   Size    ID     EST')
-            imprimir_en_posicion(0, 100, f'\033[32mMarco\033[0m   Size    ID     EST')
-            imprimir_en_posicion(0, 135, f'\033[32mMarco\033[0m   Size    ID     EST')
-            for i in range(1,memory): #IMP Paginacion 
-                if i <= 15:
-                    if i <= 9:
-                        imprimir_en_posicion(i+1, 65, f'\033[33m|0{i}|\033[0m    {1}/5     {1}      Eje     \033[32m|\033[0m') #Marco 1-9
-                    else:
-                        imprimir_en_posicion(i+1, 65, f'\033[33m|{i}|\033[0m    {1}/5     {1}      Eje     \033[32m|\033[0m') #Marco 10-15
-                elif i > 15 and i <= 30:
-                    imprimir_en_posicion(i-14, 100, f'\033[33m|{i}|\033[0m    {1}/5     {1}      Nue     \033[32m|\033[0m') #Marco 16-30
-                else:
-                    if i > 40:
-                        imprimir_en_posicion(i-28, 135, f'\033[33m|{i}|\033[0m    0/5     S/D    S.O     \033[32m|\033[0m') #S.O Recerved = Marco 41-44
-                    else:
-                        imprimir_en_posicion(i-28, 135, f'\033[33m|{i}|\033[0m    {1}/5     {1}      Lis     \033[32m|\033[0m') #Marco 31-40
-
+            paginacion()
             imprimir_en_posicion(10, 30, f' < N° Procesos nuevos: {new} > ')
             imprimir_en_posicion(0, 0, '-------------------------- < Listos > -------------------------')
             imprimir_en_posicion(2, 0, '>ID\t>TME\t>TT')
@@ -259,6 +267,10 @@ def console(elementos,quantum):
                 contador += 1
                 imprimir_en_posicion(11, 35, f' < Contador: {contador} >')  #Muestra el contador
                 imprimir_en_posicion(12, 35, f' < Quantum: {quantum_time} >')  #Muestra el contador
+                if(len(elementos) > 0):
+                    imprimir_en_posicion(13, 35, f' > Next: {elementos[0].process_id} Size: {elementos[0].size}')  #Muestra el contad
+                else:
+                    imprimir_en_posicion(13, 35, f' > Next: -- Size: -  ')  #Muestra el contad
                 imprimir_en_posicion(9, 0, f' '*25) #Limpiar
                 imprimir_en_posicion(10, 0, f' '*25) #Limpiar
                 imprimir_en_posicion(11, 0, f' '*25) #Limpiar
@@ -303,10 +315,10 @@ def console(elementos,quantum):
                 input(' ')'''
             #--------------------------------------------------------------------------------------------------------
             #limpiar(8,13)   #Limpia las filas en ejecucion
-            imprimir_en_posicion(9, 0, f' '*20) #Limpiar
-            imprimir_en_posicion(10, 0, f' '*20) #Limpiar
-            imprimir_en_posicion(11, 0, f' '*20) #Limpiar
-            imprimir_en_posicion(12, 0, f' '*20) #Limpiar
+            imprimir_en_posicion(9, 0, f' '*25) #Limpiar
+            imprimir_en_posicion(10, 0, f' '*25) #Limpiar
+            imprimir_en_posicion(11, 0, f' '*30) #Limpiar
+            imprimir_en_posicion(12, 0, f' '*25) #Limpiar
             imprimir_en_posicion(8, 0, '-------------------- < Proceso en ejecución > -----------------')
             imprimir_en_posicion(9, 0, f'                                       ')
             imprimir_en_posicion(10, 0, f'-ID: {ejecucion.process_id}')
@@ -339,6 +351,10 @@ def console(elementos,quantum):
                 ejecucion.wait_time += 1
                 imprimir_en_posicion(11, 35, f' < Contador: {contador} >')  #Muestra el contador
                 imprimir_en_posicion(12, 35, f' < Quantum: {quantum_time} >')  #Muestra el contad
+                if(len(elementos) > 0):
+                    imprimir_en_posicion(13, 35, f' > Next: {elementos[0].process_id} Size: {elementos[0].size}')  #Muestra el contad
+                else:
+                    imprimir_en_posicion(13, 35, f' > Next: -- Size: -  ')  #Muestra el contad
                 time.sleep(0.5)
                 if key_i == True:
                     #if keyboard.is_pressed('i'):  # Verifica si la tecla "e" ha sido presionada
@@ -390,7 +406,11 @@ def console(elementos,quantum):
                             elementos.append(new_process) #Agrega a nuevos
                             new += 1
                     imprimir_en_posicion(10, 30, f' < N° Procesos nuevos: {new} > ') #Imprime 
-                    limpiar(3,8)    #Limpia las filas en actuales
+                    imprimir_en_posicion(3, 0, f' '*20) #Limpiar
+                    imprimir_en_posicion(4, 0, f' '*20) #Limpiar
+                    imprimir_en_posicion(5, 0, f' '*20) #Limpiar
+                    imprimir_en_posicion(6, 0, f' '*20) #Limpiar
+                    imprimir_en_posicion(7, 0, f' '*20) #Limpiar
                     fila = 3
                     for element in grupito:       #Actualiza la actual cola
                         imprimir_en_posicion(fila, 0,f' {element.process_id}\t  {element.time}\t  {element.time_run}')
@@ -481,11 +501,9 @@ def main():
     for count_process in range(1,process+1):
         listProcess.append(Process(count_process))
 
-    #print(listProcess)
-    
+ 
     for i in listProcess:
         print(i.print())
-
     #input('Press enter')
     os.system('cls')
     console(listProcess,quantum)
