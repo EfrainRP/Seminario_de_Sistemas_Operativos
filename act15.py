@@ -86,56 +86,7 @@ def console(elementos,quantum):
         memory.append([0,0,"---"]) #List = [Size,ID,State]
     with open("suspendidos.pkl", 'wb'):  #Initially empty the file
             pass
-    '''
-    #Ocupados
-    for element in elementos:
-        print(element.process_id)
-        if(element.process_id == 6):
-            print('estaa')
-            break
-    input('')
-    memory[2] = [15,1,"Blo"]
-    memory[3] = [20,2,"Eje"]
-    memory[5] = [16,3,"Lis"]
-    memory[17] = [8,4,"Eje"]
-    #Ocupa espacios en la memoria 
-    libres = 0
-    frames = math.ceil(17 / 5) #Cantidad de marcos a ocupar donde size es el tamaño de proceso
-    if((17 % 5) != 0): #Si el tamaño del ultimo frame es distinto a 5 (1-4/5)
-            frame = 17 % 5 
-    else:
-        frame = 5
-    for i in range(len(memory)):
-        if(memory[i][1] == 0):
-            libres += 1
-    print(libres)
-    if((libres - frames) >= 0): #Si el proceso cabe en memoria 
-        ocupados = 0 #Marcos ocupados 
-        for i in range(len(memory)): #Se recorre la memoria
-            if ocupados == frames: #Cuando se ocupe la cantidad esperada termina 
-                memory[i-1][0] = frame #Actualiza el tamaño de ultimo frame 
-                break
-            else:
-                if(memory[i][1] == 0):
-                    memory[i][0] = 5
-                    memory[i][1] = 9
-                    memory[i][2] = "MYS"
-                    ocupados += 1
-    libres = 0
-    for i in range(len(memory)):
-        if(memory[i][1] == 0):
-            libres += 1
-    print("Nuevos espacios ocupados: ",libres)
-    print(memory)                
-     #Desocupa espacios en la memoria 
-    for i in range(len(memory)): #Se recorre la memoria 
-        if(memory[i][1] == 5): #Se busca las coincidencias del ID en memoria del terminado para liberar espacio 
-            memory[i][0] = 0
-            memory[i][1] = 0
-            memory[i][2] = "---"
-    input('')
-    '''
-   
+ 
     def ocuparMemoria(size,id,state):
         #Ocupa espacios en la memoria 
         libres = 0
