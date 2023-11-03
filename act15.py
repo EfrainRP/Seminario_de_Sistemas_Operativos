@@ -80,7 +80,6 @@ def console(elementos,quantum):
     quantum_time = quantum
     new = 0      #Actual processes
     suspended = []  #Processes suspended 
-    recuperados = [] 
     
     for i in range(40): #Declaration Memory
         memory.append([0,0,"---"]) #List = [Size,ID,State]
@@ -192,10 +191,10 @@ def console(elementos,quantum):
                 if key_s == True: #Al detectar la tecla s
                     desocuparMemoria(proceso.process_id)   #Desocupa el proceso bloqueado de memoria 
                     paginacion()
-                    suspended.append(proceso)
+                    suspended.append(proceso) #Agrega el proceso al estado fuera de memoria "suspendidos"
                     imprimir_en_posicion(19, 120, f' < N° Suspended: \033[91m{len(suspended)}\033[0m > ')
                     imprimir_en_posicion(20, 120, f'\033[33m-Suspended:\033[0m {suspended[0].process_id} Size: {suspended[0].size}')  #Primer suspendido
-                    with open('suspendidos.pkl', 'wb') as archivo: #Archivo binario en modo escritura 
+                    with open('suspendidos.pkl', 'wb') as archivo: #Archivo binario en modo escritura "with" abre y cierra el archivo en modo seguro
                           pickle.dump(suspended, archivo) #Almacena en el archivo el proceso suspendido 
                     key_s = False
                     imprimir_en_posicion(pos_fila, 35, f' '*30) #Limpiar
@@ -241,13 +240,10 @@ def console(elementos,quantum):
     def tecla_r():
         if os.path.getsize('suspendidos.pkl') != 0: #Si contiene procesos suspendidos 
                         with open('suspendidos.pkl', 'rb') as archivo:  #Abre el archivo binario en modo lectura 
-                            suspendidos_recuperados = pickle.load(archivo)
-                            recuperado = suspendidos_recuperados.pop(0)
+                            suspendidos_recuperados = pickle.load(archivo) #Recupera los suspendidos del archivo
+                            recuperado = suspendidos_recuperados.pop(0) 
                             #imprimir_en_posicion(19, 120, f' < N° Suspended: {len(suspended)} > ')
                             #imprimir_en_posicion(20, 120, f'-Suspended: {recuperado.process_id} Size: {recuperado.size}')  
-                            for i in range(len(memory)):
-                                    if recuperado.process_id == memory[i][1]:
-                                        memory[i][2] = "\033[94;1mLis\033[0m"
                             band = ocuparMemoria(recuperado.size,recuperado.process_id,"\033[94;1mLis\033[0m") #El suspendido intenta entrar a memoria
                             if band == True: #Si pudo entrar, el proceso regresa a listos
                                 suspended.pop(0)
@@ -257,13 +253,11 @@ def console(elementos,quantum):
                                 suspendidos_recuperados.insert(0,recuperado)
                             paginacion()
                             if len(suspendidos_recuperados) != 0:   #Si aun hay recuperados, los regresa al archivo 
-                                with open('suspendidos.pkl', 'wb') as archivo:
+                                with open('suspendidos.pkl', 'wb') as archivo:  #Escribe en el archivo los suspendidos actuales
                                     pickle.dump(suspendidos_recuperados, archivo)
                                     #if len(suspended != 0):
-                            else:                       #Sino, vacia el archivo 
-                                with open("suspendidos.pkl", 'wb'):  
-                                    #imprimir_en_posicion(23, 90, f'vaciado')
-                                    #if len(suspended != 0):
+                            else:                       #Sino, vacía el archivo 
+                                with open("suspendidos.pkl", 'wb'):  #"with" abre y cierra el archivo en modo seguro
                                     pass
                         imprimir_en_posicion(19, 120, f' '*30)
                         imprimir_en_posicion(20, 120, f' '*50)
