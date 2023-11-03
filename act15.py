@@ -86,7 +86,56 @@ def console(elementos,quantum):
         memory.append([0,0,"---"]) #List = [Size,ID,State]
     with open("suspendidos.pkl", 'wb'):  #Initially empty the file
             pass
- 
+    '''
+    #Ocupados
+    for element in elementos:
+        print(element.process_id)
+        if(element.process_id == 6):
+            print('estaa')
+            break
+    input('')
+    memory[2] = [15,1,"Blo"]
+    memory[3] = [20,2,"Eje"]
+    memory[5] = [16,3,"Lis"]
+    memory[17] = [8,4,"Eje"]
+    #Ocupa espacios en la memoria 
+    libres = 0
+    frames = math.ceil(17 / 5) #Cantidad de marcos a ocupar donde size es el tamaño de proceso
+    if((17 % 5) != 0): #Si el tamaño del ultimo frame es distinto a 5 (1-4/5)
+            frame = 17 % 5 
+    else:
+        frame = 5
+    for i in range(len(memory)):
+        if(memory[i][1] == 0):
+            libres += 1
+    print(libres)
+    if((libres - frames) >= 0): #Si el proceso cabe en memoria 
+        ocupados = 0 #Marcos ocupados 
+        for i in range(len(memory)): #Se recorre la memoria
+            if ocupados == frames: #Cuando se ocupe la cantidad esperada termina 
+                memory[i-1][0] = frame #Actualiza el tamaño de ultimo frame 
+                break
+            else:
+                if(memory[i][1] == 0):
+                    memory[i][0] = 5
+                    memory[i][1] = 9
+                    memory[i][2] = "MYS"
+                    ocupados += 1
+    libres = 0
+    for i in range(len(memory)):
+        if(memory[i][1] == 0):
+            libres += 1
+    print("Nuevos espacios ocupados: ",libres)
+    print(memory)                
+     #Desocupa espacios en la memoria 
+    for i in range(len(memory)): #Se recorre la memoria 
+        if(memory[i][1] == 5): #Se busca las coincidencias del ID en memoria del terminado para liberar espacio 
+            memory[i][0] = 0
+            memory[i][1] = 0
+            memory[i][2] = "---"
+    input('')
+    '''
+   
     def ocuparMemoria(size,id,state):
         #Ocupa espacios en la memoria 
         libres = 0
@@ -190,15 +239,17 @@ def console(elementos,quantum):
                 pausa.wait() #Detiene temporalmente al subproceso
                 TT += 1
                 if key_s == True: #Al detectar la tecla s
-                    for i in range(len(memory)):       #Cambia el estado del proceso bloqueado a "Suspendido"
-                        if proceso.process_id == memory[i][1]:
-                            memory[i][2] = "\033[91mSus\033[0m"
+                    desocuparMemoria(proceso.process_id)   #Desocupa el proceso bloqueado de memoria 
                     paginacion()
                     suspended.append(proceso)
+                    imprimir_en_posicion(19, 120, f' < N° Suspended: \033[91m{len(suspended)}\033[0m > ')
+                    imprimir_en_posicion(20, 120, f'\033[33m-Suspended:\033[0m {suspended[0].process_id} Size: {suspended[0].size}')  #Primer suspendido
                     with open('suspendidos.pkl', 'wb') as archivo: #Archivo binario en modo escritura 
                           pickle.dump(suspended, archivo) #Almacena en el archivo el proceso suspendido 
                     key_s = False
                     imprimir_en_posicion(pos_fila, 35, f' '*30) #Limpiar
+                    proceso.blocked_time = 0 #Reinicia el contador bloqueado
+                    bloqueados[index] = (0)  #Actualiza el bloqueado
                     return
                     #x = 80
                     #for s in suspended:
@@ -206,7 +257,7 @@ def console(elementos,quantum):
                     #    x+=5
                 proceso.blocked_time = TT
                 bloqueados[index] = proceso #Contador actual del proceso bloqueado
-                imprimir_en_posicion(pos_fila, 35, f'\t\t>ID: {proceso.process_id} TT-->{proceso.blocked_time} ')
+                imprimir_en_posicion(pos_fila, 35, f'\t\t\033[38;5;208m>ID:\033[0m {proceso.process_id} \033[38;5;208mTT-->\033[0m {proceso.blocked_time} ')
                 
                 #imprimir_en_posicion(pos, 70, f' < TT {bloqueados[index]} > ')  
                 time.sleep(0.5)
@@ -241,23 +292,33 @@ def console(elementos,quantum):
                         with open('suspendidos.pkl', 'rb') as archivo:  #Abre el archivo binario en modo lectura 
                             suspendidos_recuperados = pickle.load(archivo)
                             recuperado = suspendidos_recuperados.pop(0)
-                            #imprimir_en_posicion(22, 90, f'ID {recuperado.process_id}')  #Muestra el contador
+                            #imprimir_en_posicion(19, 120, f' < N° Suspended: {len(suspended)} > ')
+                            #imprimir_en_posicion(20, 120, f'-Suspended: {recuperado.process_id} Size: {recuperado.size}')  
                             for i in range(len(memory)):
                                     if recuperado.process_id == memory[i][1]:
                                         memory[i][2] = "\033[94;1mLis\033[0m"
+                            band = ocuparMemoria(recuperado.size,recuperado.process_id,"\033[94;1mLis\033[0m") #El suspendido intenta entrar a memoria
+                            if band == True: #Si pudo entrar, el proceso regresa a listos
+                                suspended.pop(0)
+                                grupito.append(recuperado)
+                            else:
+                                #Sino, el proceso sigue estando en suspendidos 
+                                suspendidos_recuperados.insert(0,recuperado)
                             paginacion()
-                            grupito.append(recuperado)
                             if len(suspendidos_recuperados) != 0:   #Si aun hay recuperados, los regresa al archivo 
                                 with open('suspendidos.pkl', 'wb') as archivo:
                                     pickle.dump(suspendidos_recuperados, archivo)
                                     #if len(suspended != 0):
-                                    suspended.pop(0)
                             else:                       #Sino, vacia el archivo 
                                 with open("suspendidos.pkl", 'wb'):  
                                     #imprimir_en_posicion(23, 90, f'vaciado')
                                     #if len(suspended != 0):
-                                    suspended.pop(0)
                                     pass
+                        imprimir_en_posicion(19, 120, f' '*30)
+                        imprimir_en_posicion(20, 120, f' '*50)
+                        imprimir_en_posicion(19, 120, f' < N° Suspended: \033[91m{len(suspended)}\033[0m > ')
+                        if len(suspended) != 0:
+                            imprimir_en_posicion(20, 120, f'\033[33m-Suspended:\033[0m {suspended[0].process_id} Size: {suspended[0].size}')  #Actualiza el primer suspendido
     def tecla_n():
             global process
             process +=1
@@ -275,6 +336,7 @@ def console(elementos,quantum):
                         new = len(elementos)
                         imprimir_en_posicion(18, 30, f' < N° Procesos nuevos: {new} > ')
                         break   
+            paginacion()
     
     def tecla_b(): #Key b Process Table
                     os.system('cls')
@@ -390,6 +452,9 @@ def console(elementos,quantum):
             new = len(elementos)
             paginacion()
             imprimir_en_posicion(18, 30, f' < N° Procesos nuevos: {new} > ')
+            imprimir_en_posicion(19, 120, f' < N° Suspended: \033[91m{len(suspended)}\033[0m > ')
+            if len(suspended) != 0:
+                    imprimir_en_posicion(20, 120, f'\033[33m-Suspended:\033[0m {suspended[0].process_id} Size: {suspended[0].size}')  #Actualiza el primer suspendido
             imprimir_en_posicion(0, 0, '\033[38;5;208m-------------------------- < Listos > -------------------------\033[0m')
             imprimir_en_posicion(2, 0, '>ID\t>TME\t>TT\t>Size')
             if len(grupito) == 0:      #Si el grupo esta vacio (todos estan bloqueados) no se muestra nada por consola
@@ -408,13 +473,13 @@ def console(elementos,quantum):
                 #if keyboard.is_pressed('p'):  # Verifica si la tecla "p" ha sido presionada
                     #imprimir_en_posicion(10, 90, '                                      ')  #Limpia antes de mostrar
                     imprimir_en_posicion(2, 35, '                    ')  #Limpia antes de mostrar
-                    imprimir_en_posicion(2, 35, f'\t\t< PAUSA >')  #Muestra el contador
+                    imprimir_en_posicion(2, 35, f'\t\t\033[33m< PAUSA >\033')  #Muestra el contador
                     #imprimir_en_posicion(16, 90, f'\t\t{bloqueados}')  #Imprime
                     
                     pausa.clear()  #Pausa los subprocesos
                     keyboard.wait("c") #Espera una "c"
                     pausa.set()    #Despausa los subprocesos
-                    imprimir_en_posicion(2, 35, f'\t\t< CONTINUANDO >')  #Muestra el contador
+                    imprimir_en_posicion(2, 35, f'\t\t\033[94;1m< CONTINUANDO >\033')  #Muestra el contador
                     #imprimir_en_posicion(8, 90, '                                       ')  #Limpia antes de mostrar
                     key_p = False
                 if key_b == True:
@@ -506,7 +571,7 @@ def console(elementos,quantum):
                     else:
                         pos_fila += 1
                     imprimir_en_posicion(2, 35, '                      ')  #Limpia antes de mostrar
-                    imprimir_en_posicion(2, 35, f'\t\t< BLOQUEADO >')  #Muestra el contador
+                    imprimir_en_posicion(2, 35, f'\t\t\033[91m < BLOQUEADO >\033[0m')  #Muestra el contador
                     #elementos.append(ejecucion)
                     interrupted = True
                     key_i = False
@@ -522,12 +587,12 @@ def console(elementos,quantum):
                     #if keyboard.is_pressed('p'):  # Verifica si la tecla "p" ha sido presionada
                     #imprimir_en_posicion(8, 90, '                                      ')  #Limpia antes de mostrar
                     imprimir_en_posicion(2, 35, '                     ')  #Limpia antes de mostrar
-                    imprimir_en_posicion(2, 35, f'\t\t< PAUSA >')  #Muestra el contador
+                    imprimir_en_posicion(2, 35, f'\t\t\033[33m< PAUSA >\033')  #Muestra el contador
                     #imprimir_en_posicion(16, 90, f'\t\t{bloqueados}')  #Imprime
                     pausa.clear() #Pausa los subprocesos
                     keyboard.wait("c") #Espera una "c"
                     pausa.set()   #Despausa los subprocesos
-                    imprimir_en_posicion(2, 35, f'\t\t< CONTINUANDO >')  #Muestra el contador
+                    imprimir_en_posicion(2, 35, f'\t\t\033[94;1m< CONTINUANDO >\033')  #Muestra el contador
                     #imprimir_en_posicion(8, 90, '                                       ')  #Limpia antes de mostrar
                     key_p = False
                 if key_n == True:   
