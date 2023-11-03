@@ -527,10 +527,8 @@ def console(elementos,quantum):
                     fila_term += 1
             else:                    #Si hay interrupcion 
                 continue
-            #limpiar(16,100) #Limpia los terminados
-        
-        limpiar(9,15)   #Limpia las filas en ejecucion al terminar el programa
-        limpiar(2,8)    #Limpia las filas en actuales
+            #limpiar(16,100) #Limpia los terminados  
+    paginacion() 
     imprimir_en_posicion(18+len(lis), 1, '') #"Posiciona el cursor" para que se imprima al final del programa
     end = True
     print('Press Enter to finish')
