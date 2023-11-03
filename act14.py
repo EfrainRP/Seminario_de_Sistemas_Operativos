@@ -97,12 +97,12 @@ def console(elementos,quantum):
             ocupados = 0 #Marcos ocupados 
             for i in range(len(memory)): #Se recorre la memoria
                     if(memory[i][1] == 0):
-                        memory[i][0] = 5  #Size default
+                        memory[i][0] = 5  #Frame size default (5/5)
                         memory[i][1] = id
                         memory[i][2] = state
                         ocupados += 1    
                         if(ocupados == frames): #Al ocuparse la cantidad de frames que necesita el proceso
-                            memory[i][0] = frame #Actualiza el tamaño del ultimo frame
+                            memory[i][0] = frame #Actualiza el tamaño del ultimo frame (1/5,2/5,3/5...)
                             return True;
         else:
             return False;
