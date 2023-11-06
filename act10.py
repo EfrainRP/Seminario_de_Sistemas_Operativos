@@ -74,7 +74,13 @@ def console(elementos,quantum):
     bloqueados = [(0),(0),(0),(0),(0)] #Procesos Bloqueados
     quantum_time = quantum
     
-    
+    def cantOcupados(): #Funcion de validacion de arreglo de bloqueados
+        vacio=0
+        for b in bloqueados:
+            if b == 0:
+                vacio +=1
+        ocupados = 5-vacio
+        return ocupados
 
     def resize_string(input_string, new_size): #Resize string for table
         if new_size < len(input_string):
@@ -258,6 +264,24 @@ def console(elementos,quantum):
                 if key_b == True:
                     tecla_b()
                     key_b = False
+                if key_n == True:
+                    process+=1
+                    new_process = (Process(process)) #Crea un nuevo proceso 
+                    new_process.time_arrival = contador          
+
+                    if (cantOcupados() + len(grupito)) < 4 :        #Si hay menos de 5 procesos en cola
+                        if len(grupito) < 4:
+                            grupito.append(new_process) #Agrega a la cola
+                        else:
+                            elementos.append(new_process)
+                            new += 1 
+                            
+                    else: #Si hay mas de 5 procesos en la cola
+                        elementos.append(new_process) #Agrega a nuevos
+                        new += 1 
+                    imprimir_en_posicion(0, 80, f' < N° Procesos nuevos: {new} > ') #Imprime 
+                    
+                    key_n = False
                 continue
             else:
                 ejecucion = grupito.pop(0) #Sino, obtiene el mas reciente del grupito para mostrar
@@ -344,25 +368,36 @@ def console(elementos,quantum):
                     imprimir_en_posicion(8, 90, '                                       ')  #Limpia antes de mostrar
                     key_p = False
                 if key_n == True:
-                    process +=1
+                    process+=1
                     new_process = (Process(process)) #Crea un nuevo proceso 
-                    new_process.time_arrival = contador          
-                    if len(elementos) != 0: #Si aun hay procesos nuevos 
+                    new_process.time_arrival = contador      
+                    if (cantOcupados() + len(grupito)) < 4 :        #Si hay menos de 5 procesos en cola
+                        if len(grupito) < 4:
+                            grupito.append(new_process) #Agrega a la cola
+                        else:
+                            elementos.append(new_process)
+                            
+                    else: #Si hay mas de 5 procesos en la cola
+                        elementos.append(new_process) #Agrega a nuevos
+                        new += 1    
+                    '''if len(elementos) != 0: #Si aun hay procesos nuevos 
                         elementos.append(new_process) #Agrega a nuevos
                         new += 1
                     else:                   #Si no hay procesos nuevos
-                        if len(grupito) < 4 and bloqueados[0] == 0:        #Si hay menos de 5 procesos en cola
-                                grupito.append(new_process) #Agrega a la cola
+                        if len(grupito) < 5 and bloqueados[0] == 0:        #Si hay menos de 5 procesos en cola
+                            grupito.append(new_process) #Agrega a la cola
+                            new += 1
+                            
                         else: #Si hay mas de 5 procesos en la cola
                             elementos.append(new_process) #Agrega a nuevos
-                            new += 1
+                            new += 1'''
                     imprimir_en_posicion(0, 80, f' < N° Procesos nuevos: {new} > ') #Imprime 
                     limpiar(3,8)    #Limpia las filas en actuales
                     fila = 3
                     for element in grupito:       #Actualiza la actual cola
-                        imprimir_en_posicion(fila, 0,f' {element.process_id}\t  {element.time}\t  {element.time_run}')
+                        imprimir_en_posicion(fila, 0,' ' + resize_string(str(element.process_id),5)+'\t '+ resize_string(str(element.time),4)+ '\t ' + resize_string(str(element.time_run),4))s
                         fila += 1    
-                    #imprimir_en_posicion(10, 90, f'\t\t{new_process.process_id}')
+                    #imprimir_en_posicion(5, 90, f'\t\t{new_process.process_id}') #Mensaje para determinar el ID del nuevo proceso
                     key_n = False
                 if key_b == True:
                     tecla_b()
