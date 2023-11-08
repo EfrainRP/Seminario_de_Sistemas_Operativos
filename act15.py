@@ -335,6 +335,16 @@ def console(elementos,quantum):
                         imprimir_en_posicion(table_row, 1, f'{terminados.process_id}\t\t{terminados.opString}\t\t\t{terminados.result}\t\t{terminados.size}\t{terminados.time_arrival}\t{terminados.completion_time}\t{terminados.return_time}\t{terminados.response_time}\t{terminados.wait_time}\t{terminados.time_run}')
                         table_row += 1
                     #imprimir_en_posicion(1, 90, f'{bloqueados}') 
+                    imprimir_en_posicion(table_row, 0, '\033[35m------------------------------------------------------------ < Suspendidos > ---------------------------------------------------------\033[0m')
+                    table_row += 1
+                    imprimir_en_posicion(table_row, 0, '>ID\t\tRestante\t\tOperación\t\tSize\t\tTL\t\tTS\t\tTE\t\tTRES')
+                    table_row += 1
+                    total_TT = 8 #Maximo transcurrido
+                    for suspend in suspended:
+                        if suspend != 0:
+                            wait_tim = (contador-suspend.time_run) #Tiempo de espera actual
+                            imprimir_en_posicion(table_row, 1, f'{suspend.process_id}\t\t{total_TT-suspend.blocked_time}\t\t\t{suspend.opString}\t\t{suspend.size}\t\t{suspend.time_arrival}\t\t{suspend.time_run}\t\t{wait_tim}\t\t{suspend.response_time}')
+                            table_row += 1
                     pausa.clear() #Pausa los subprocesos
                     keyboard.wait("c") #Espera una "c"
                     os.system('cls')
