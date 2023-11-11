@@ -64,9 +64,6 @@ class Process:
 
 #---------------------------------------------------------------------------------------------------------
 #CONSOLE
-
-
-
 def console(elementos,quantum):
     global key_i,key_e,key_p,end,key_n,process,key_b,new,key_s,key_r
     lis = []      #Procesos Terminados
@@ -146,7 +143,6 @@ def console(elementos,quantum):
                             ID = resize_string(str(memory[i-1][1]),2)
                             imprimir_en_posicion(i-28, 135, f'\033[33m|{i}|\033[0m    {memory[i-1][0]}/5     {ID}     {memory[i-1][2]}    \033[32m|\033[0m') #Marco 31-40
 
-
     def resize_string(input_string, new_size): #Resize string for table
         if new_size < len(input_string):
             return input_string[:new_size] #Cut the string until new_size
@@ -200,7 +196,7 @@ def console(elementos,quantum):
                     imprimir_en_posicion(19, 120, f' < N° Suspended: \033[91m{len(suspended)}\033[0m > ')
                     imprimir_en_posicion(20, 120, f'\033[33m-Suspended:\033[0m {suspended[0].process_id} Size: {suspended[0].size}')  #Primer suspendido
                     with open('suspendidos.pkl', 'wb') as archivo: #Archivo binario en modo escritura "with" abre y cierra el archivo en modo seguro
-                          pickle.dump(suspended, archivo) #Almacena en el archivo el proceso suspendido 
+                            pickle.dump(suspended, archivo) #Almacena en el archivo el proceso suspendido 
                     key_s = False
                     imprimir_en_posicion(pos_fila, 35, f' '*30) #Limpiar
                     proceso.blocked_time = 0 #Reinicia el contador bloqueado
@@ -234,7 +230,6 @@ def console(elementos,quantum):
                     for element in grupito:       #Actualiza el actual grupo de procesos
                         imprimir_en_posicion(fila, 0,f' {element.process_id}\t  {element.time}\t  {element.time_run}\t {element.size}')
                         fila += 1  
-                         
 
     def limpiar(inicial,final):   #Limpia por consola
         for row in range(inicial,final):
@@ -246,148 +241,144 @@ def console(elementos,quantum):
     
     def tecla_r():
         if os.path.getsize('suspendidos.pkl') != 0: #Si contiene procesos suspendidos 
-                        with open('suspendidos.pkl', 'rb') as archivo:  #Abre el archivo binario en modo lectura 
-                            suspendidos_recuperados = pickle.load(archivo) #Recupera los suspendidos del archivo
-                            recuperado = suspendidos_recuperados.pop(0) 
-                            #imprimir_en_posicion(19, 120, f' < N° Suspended: {len(suspended)} > ')
-                            #imprimir_en_posicion(20, 120, f'-Suspended: {recuperado.process_id} Size: {recuperado.size}')  
-                            band = ocuparMemoria(recuperado.size,recuperado.process_id,"\033[94;1mLis\033[0m") #El suspendido intenta entrar a memoria
-                            if band == True: #Si pudo entrar, el proceso regresa a listos
-                                suspended.pop(0)
-                                grupito.append(recuperado)
-                            else:
-                                #Sino, el proceso sigue estando en suspendidos 
-                                suspendidos_recuperados.insert(0,recuperado)
-                            paginacion()
-                            if len(suspendidos_recuperados) != 0:   #Si aun hay recuperados, los regresa al archivo 
-                                with open('suspendidos.pkl', 'wb') as archivo:  #Escribe en el archivo los suspendidos actuales
-                                    pickle.dump(suspendidos_recuperados, archivo)
-                                    #if len(suspended != 0):
-                            else:                       #Sino, vacía el archivo 
-                                with open("suspendidos.pkl", 'wb'):  #"with" abre y cierra el archivo en modo seguro
-                                    pass
-                        imprimir_en_posicion(19, 120, f' '*30)
-                        imprimir_en_posicion(20, 120, f' '*50)
-                        imprimir_en_posicion(19, 120, f' < N° Suspended: \033[91m{len(suspended)}\033[0m > ')
-                        if len(suspended) != 0:
-                            imprimir_en_posicion(20, 120, f'\033[33m-Suspended:\033[0m {suspended[0].process_id} Size: {suspended[0].size}')  #Actualiza el primer suspendido
+            with open('suspendidos.pkl', 'rb') as archivo:  #Abre el archivo binario en modo lectura 
+                suspendidos_recuperados = pickle.load(archivo) #Recupera los suspendidos del archivo
+                recuperado = suspendidos_recuperados.pop(0) 
+                #imprimir_en_posicion(19, 120, f' < N° Suspended: {len(suspended)} > ')
+                #imprimir_en_posicion(20, 120, f'-Suspended: {recuperado.process_id} Size: {recuperado.size}')  
+                band = ocuparMemoria(recuperado.size,recuperado.process_id,"\033[94;1mLis\033[0m") #El suspendido intenta entrar a memoria
+                if band == True: #Si pudo entrar, el proceso regresa a listos
+                    suspended.pop(0)
+                    grupito.append(recuperado)
+                else:
+                    #Sino, el proceso sigue estando en suspendidos 
+                    suspendidos_recuperados.insert(0,recuperado)
+                paginacion()
+                if len(suspendidos_recuperados) != 0:   #Si aun hay recuperados, los regresa al archivo 
+                    with open('suspendidos.pkl', 'wb') as archivo:  #Escribe en el archivo los suspendidos actuales
+                        pickle.dump(suspendidos_recuperados, archivo)
+                        #if len(suspended != 0):
+                else:                       #Sino, vacía el archivo 
+                    with open("suspendidos.pkl", 'wb'):  #"with" abre y cierra el archivo en modo seguro
+                        pass
+            imprimir_en_posicion(19, 120, f' '*30)
+            imprimir_en_posicion(20, 120, f' '*50)
+            imprimir_en_posicion(19, 120, f' < N° Suspended: \033[91m{len(suspended)}\033[0m > ')
+            if len(suspended) != 0:
+                imprimir_en_posicion(20, 120, f'\033[33m-Suspended:\033[0m {suspended[0].process_id} Size: {suspended[0].size}')  #Actualiza el primer suspendido
     def tecla_n():
-            global process
-            process +=1
-            new_process = (Process(process)) #Crea un nuevo proceso 
-            new_process.time_arrival = contador     
-            while True: #Ocupa inicialmente la Memoria
-                    initial = new_process
-                    band = ocuparMemoria(initial.size,initial.process_id,"\033[94;1mLis\033[0m")
-                    if band == True:
-                        initial.time_arrival = contador  #Tiempo de llegada de los primeros 5 procesos 
-                        grupito.append(initial)   
-                        break
-                    else:
-                        elementos.append(initial)
-                        new = len(elementos)
-                        imprimir_en_posicion(18, 30, f' < N° Procesos nuevos: {new} > ')
-                        break   
-            paginacion()
+        global process
+        process +=1
+        new_process = (Process(process)) #Crea un nuevo proceso 
+        new_process.time_arrival = contador     
+        while True: #Ocupa inicialmente la Memoria
+                initial = new_process
+                band = ocuparMemoria(initial.size,initial.process_id,"\033[94;1mLis\033[0m")
+                if band == True:
+                    initial.time_arrival = contador  #Tiempo de llegada de los primeros 5 procesos 
+                    grupito.append(initial)   
+                    break
+                else:
+                    elementos.append(initial)
+                    new = len(elementos)
+                    imprimir_en_posicion(18, 30, f' < N° Procesos nuevos: {new} > ')
+                    break   
+        paginacion()
     
     def tecla_b(): #Key b Process Table
-                    os.system('cls')
-                    imprimir_en_posicion(0, 21, '\033[32m> Tabla de Procesos \033[0m')
-                    imprimir_en_posicion(2, 0, '\033[94;1m------------------------------------------------------------ < Nuevos > ------------------------------------------------------------\033[0m')
-                    imprimir_en_posicion(3, 0, '>ID\t\t>TME\t\t\tOperación\t\tSize')
-                    table_row = 4
-                    for nuevo in elementos:  #Nuevos 
-                        imprimir_en_posicion(table_row, 1, f'{nuevo.process_id}\t\t{nuevo.time}\t\t\t{nuevo.opString}\t\t{nuevo.size}') 
-                        table_row += 1
-                    imprimir_en_posicion(table_row, 0, '\033[38;5;208m------------------------------------------------------------ < Listos > ------------------------------------------------------------\033[0m')
-                    table_row += 1
-                    imprimir_en_posicion(table_row, 0, '>ID\t\t>TME\t\t\tOperación\t\tSize\t\tTL\t\tTS\t\tTE\t\tTRES')
-                    table_row += 1
-                    for element in grupito:
-                        wait_tim = (contador-element.time_run) #Tiempo de espera actual
-                        imprimir_en_posicion(table_row, 1, f'{element.process_id}\t\t{element.time}\t\t\t{element.opString}\t\t{element.size}\t\t{element.time_arrival}\t\t{element.time_run}\t\t{wait_tim}\t\t{element.response_time}') 
-                        table_row +=1 
-                    imprimir_en_posicion(table_row, 0, '\033[33m------------------------------------------------------------ < Ejecución > ---------------------------------------------------------\033[0m')
-                    table_row += 1
-                    imprimir_en_posicion(table_row, 0, '>ID\t\t>TME\t\t\tOperación\t\tSize\t\tTL\t\tTS\t\tTE\t\tTRES')
-                    table_row += 1
-                    wait_tim = (contador-ejecucion.time_run) #Tiempo de espera actual
-                    imprimir_en_posicion(table_row, 0, f'{ejecucion.process_id}\t\t{ejecucion.time}\t\t\t{ejecucion.opString}\t\t{ejecucion.size}\t\t{ejecucion.time_arrival}\t\t{ejecucion.time_run}\t\t{wait_tim}\t\t{ejecucion.response_time}')
-                    if bloqueados[4] != 0 and bloqueados[3] != 0 and bloqueados[2] != 0 and bloqueados[1] != 0 and bloqueados[4] != 0:
-                        imprimir_en_posicion(table_row, 0, f' '*300)
-                    table_row += 1
-                    #imprimir_en_posicion(10, 90, f'{bloqueados}')
-                    imprimir_en_posicion(table_row, 0, '\033[91m------------------------------------------------------------ < Bloqueados > ---------------------------------------------------------\033[0m')
-                    table_row += 1
-                    imprimir_en_posicion(table_row, 0, '>ID\t\tRestante\t\tOperación\t\tSize\t\tTL\t\tTS\t\tTE\t\tTRES')
-                    table_row += 1
-                    total_TT = 8 #Maximo transcurrido
-                    for blocked in bloqueados:
-                        if blocked != 0:
-                            wait_tim = (contador-blocked.time_run) #Tiempo de espera actual
-                            imprimir_en_posicion(table_row, 1, f'{blocked.process_id}\t\t{total_TT-blocked.blocked_time}\t\t\t{blocked.opString}\t\t{blocked.size}\t\t{blocked.time_arrival}\t\t{blocked.time_run}\t\t{wait_tim}\t\t{blocked.response_time}')
-                            table_row += 1
-                    imprimir_en_posicion(table_row, 0, '\033[32m------------------------------------------------------------ < Terminados > ---------------------------------------------------------\033[0m')
-                    table_row += 1  
-                    imprimir_en_posicion(table_row, 0, '>ID\t\t>Operacion\t\t\t>Resultado\tSize\tTL\tTF\tTR\tTRES\tTE\tTS')
-                    table_row += 1
-                    for terminados in lis:
-                        imprimir_en_posicion(table_row, 1, f'{terminados.process_id}\t\t{terminados.opString}\t\t\t{terminados.result}\t\t{terminados.size}\t{terminados.time_arrival}\t{terminados.completion_time}\t{terminados.return_time}\t{terminados.response_time}\t{terminados.wait_time}\t{terminados.time_run}')
-                        table_row += 1
-                    #imprimir_en_posicion(1, 90, f'{bloqueados}') 
-                    imprimir_en_posicion(table_row, 0, '\033[35m------------------------------------------------------------ < Suspendidos > ---------------------------------------------------------\033[0m')
-                    table_row += 1
-                    imprimir_en_posicion(table_row, 0, '>ID\t\tRestante\t\tOperación\t\tSize\t\tTL\t\tTS\t\tTE\t\tTRES')
-                    table_row += 1
-                    total_TT = 8 #Maximo transcurrido
-                    for suspend in suspended:
-                        if suspend != 0:
-                            wait_tim = (contador-suspend.time_run) #Tiempo de espera actual
-                            imprimir_en_posicion(table_row, 1, f'{suspend.process_id}\t\t{total_TT-suspend.blocked_time}\t\t\t{suspend.opString}\t\t{suspend.size}\t\t{suspend.time_arrival}\t\t{suspend.time_run}\t\t{wait_tim}\t\t{suspend.response_time}')
-                            table_row += 1
-                    pausa.clear() #Pausa los subprocesos
-                    keyboard.wait("c") #Espera una "c"
-                    os.system('cls')
-                    imprimir_en_posicion(18, 30, f' < N° Procesos nuevos: {new} > ')
-                    imprimir_en_posicion(0, 0, '\033[38;5;208m-------------------------- < Listos > -------------------------\033[0m')
-                    imprimir_en_posicion(2, 0, '>ID\t>TME\t>TT')
-                    imprimir_en_posicion(19, 35, f' < Contador: {contador} >')  #Muestra el contador
-                    fila_b = 3
-                    for element in grupito:       #Actualiza la actual cola
-                        imprimir_en_posicion(fila_b, 0,f' {element.process_id}\t  {element.time}\t  {element.time_run}\t  {element.size}')
-                        fila_b += 1
-                    imprimir_en_posicion(16, 0, '-\033[33m-------------------- < Proceso en Ejecución > -----------------\033[0m')
-                    imprimir_en_posicion(17, 0, f'                                       ')
-                    imprimir_en_posicion(18, 0, f'-ID: {ejecucion.process_id}')
-                    imprimir_en_posicion(19, 0, f'-Operacion-> {ejecucion.opString}')
-                    imprimir_en_posicion(20, 0, f'-Tiempo MXE: {ejecucion.time}')
-                    imprimir_en_posicion(21, 0, f'-Tiempo TRA: {ejecucion.time_run}            ')
-                    imprimir_en_posicion(22, 0, '                 ')  #Limpia antes de mostrar
-                    imprimir_en_posicion(22, 0, f'-Tiempo RES: {ejecucion.time-ejecucion.time_run}        ')
-                    imprimir_en_posicion(24, 1, '\033[32m---------------------------------------------------- < Terminados > ----------------------------------------------------\033[0m')
-                    imprimir_en_posicion(25, 1, '>ID\t\t>Operacion\t\t\t>Resultado\tTL\tTF\tTR\tTRES\tTE\tTS\tSize')
-                    fila_term_b = 26       
-                    for terminados in lis:   #Muestra cada uno de los procesos terminados
-                        idString = resize_string(' ' + str(terminados.process_id),18)
-                        operationString = resize_string(terminados.opString,32)
-                        resultString = resize_string(' ' + str(terminados.result),14)
-                        time_arrival = resize_string(' ' + str(terminados.time_arrival),7)
-                        completion_time = resize_string(' ' + str(terminados.completion_time),8)
-                        return_time = resize_string(' ' + str(terminados.return_time),8)
-                        response_time = resize_string(' ' + str(terminados.response_time),8)
-                        wait_time = resize_string(' ' + str(terminados.wait_time),8)
-                        time_run = resize_string(' ' + str(terminados.time_run),8)
-                        size = resize_string(' ' + str(terminados.size),8)
-                        imprimir_en_posicion(fila_term_b, 1, f'{idString}{operationString}{resultString}{time_arrival}{completion_time}{return_time}{response_time}{wait_time}{time_run}{size}')
-                        fila_term_b += 1
-                    pausa.set()   #Despausa los subprocesos
-                    imprimir_en_posicion(2, 35, f'\t\t< CONTINUANDO >')  #Muestra el contador
-                    #imprimir_en_posicion(8, 90, '                                       ')  
-                      
- 
- 
- 
- 
+        os.system('cls')
+        imprimir_en_posicion(0, 21, '\033[32m> Tabla de Procesos \033[0m')
+        imprimir_en_posicion(2, 0, '\033[94;1m------------------------------------------------------------ < Nuevos > ------------------------------------------------------------\033[0m')
+        imprimir_en_posicion(3, 0, '>ID\t\t>TME\t\t\tOperación\t\tSize')
+        table_row = 4
+        for nuevo in elementos:  #Nuevos 
+            imprimir_en_posicion(table_row, 1, f'{nuevo.process_id}\t\t{nuevo.time}\t\t\t{nuevo.opString}\t\t{nuevo.size}') 
+            table_row += 1
+        imprimir_en_posicion(table_row, 0, '\033[38;5;208m------------------------------------------------------------ < Listos > ------------------------------------------------------------\033[0m')
+        table_row += 1
+        imprimir_en_posicion(table_row, 0, '>ID\t\t>TME\t\t\tOperación\t\tSize\t\tTL\t\tTS\t\tTE\t\tTRES')
+        table_row += 1
+        for element in grupito:
+            wait_tim = (contador-element.time_run) #Tiempo de espera actual
+            imprimir_en_posicion(table_row, 1, f'{element.process_id}\t\t{element.time}\t\t\t{element.opString}\t\t{element.size}\t\t{element.time_arrival}\t\t{element.time_run}\t\t{wait_tim}\t\t{element.response_time}') 
+            table_row +=1 
+        imprimir_en_posicion(table_row, 0, '\033[33m------------------------------------------------------------ < Ejecución > ---------------------------------------------------------\033[0m')
+        table_row += 1
+        imprimir_en_posicion(table_row, 0, '>ID\t\t>TME\t\t\tOperación\t\tSize\t\tTL\t\tTS\t\tTE\t\tTRES')
+        table_row += 1
+        wait_tim = (contador-ejecucion.time_run) #Tiempo de espera actual
+        imprimir_en_posicion(table_row, 0, f'{ejecucion.process_id}\t\t{ejecucion.time}\t\t\t{ejecucion.opString}\t\t{ejecucion.size}\t\t{ejecucion.time_arrival}\t\t{ejecucion.time_run}\t\t{wait_tim}\t\t{ejecucion.response_time}')
+        if bloqueados[4] != 0 and bloqueados[3] != 0 and bloqueados[2] != 0 and bloqueados[1] != 0 and bloqueados[4] != 0:
+            imprimir_en_posicion(table_row, 0, f' '*300)
+        table_row += 1
+        #imprimir_en_posicion(10, 90, f'{bloqueados}')
+        imprimir_en_posicion(table_row, 0, '\033[91m------------------------------------------------------------ < Bloqueados > ---------------------------------------------------------\033[0m')
+        table_row += 1
+        imprimir_en_posicion(table_row, 0, '>ID\t\tRestante\t\tOperación\t\tSize\t\tTL\t\tTS\t\tTE\t\tTRES')
+        table_row += 1
+        total_TT = 8 #Maximo transcurrido
+        for blocked in bloqueados:
+            if blocked != 0:
+                wait_tim = (contador-blocked.time_run) #Tiempo de espera actual
+                imprimir_en_posicion(table_row, 1, f'{blocked.process_id}\t\t{total_TT-blocked.blocked_time}\t\t\t{blocked.opString}\t\t{blocked.size}\t\t{blocked.time_arrival}\t\t{blocked.time_run}\t\t{wait_tim}\t\t{blocked.response_time}')
+                table_row += 1
+        imprimir_en_posicion(table_row, 0, '\033[32m------------------------------------------------------------ < Terminados > ---------------------------------------------------------\033[0m')
+        table_row += 1  
+        imprimir_en_posicion(table_row, 0, '>ID\t\t>Operacion\t\t\t>Resultado\tSize\tTL\tTF\tTR\tTRES\tTE\tTS')
+        table_row += 1
+        for terminados in lis:
+            imprimir_en_posicion(table_row, 1, f'{terminados.process_id}\t\t{terminados.opString}\t\t\t{terminados.result}\t\t{terminados.size}\t{terminados.time_arrival}\t{terminados.completion_time}\t{terminados.return_time}\t{terminados.response_time}\t{terminados.wait_time}\t{terminados.time_run}')
+            table_row += 1
+        #imprimir_en_posicion(1, 90, f'{bloqueados}') 
+        imprimir_en_posicion(table_row, 0, '\033[35m------------------------------------------------------------ < Suspendidos > ---------------------------------------------------------\033[0m')
+        table_row += 1
+        imprimir_en_posicion(table_row, 0, '>ID\t\tRestante\t\tOperación\t\tSize\t\tTL\t\tTS\t\tTE\t\tTRES')
+        table_row += 1
+        total_TT = 8 #Maximo transcurrido
+        for suspend in suspended:
+            if suspend != 0:
+                wait_tim = (contador-suspend.time_run) #Tiempo de espera actual
+                imprimir_en_posicion(table_row, 1, f'{suspend.process_id}\t\t{total_TT-suspend.blocked_time}\t\t\t{suspend.opString}\t\t{suspend.size}\t\t{suspend.time_arrival}\t\t{suspend.time_run}\t\t{wait_tim}\t\t{suspend.response_time}')
+                table_row += 1
+        pausa.clear() #Pausa los subprocesos
+        keyboard.wait("c") #Espera una "c"
+        os.system('cls')
+        imprimir_en_posicion(18, 30, f' < N° Procesos nuevos: {new} > ')
+        imprimir_en_posicion(0, 0, '\033[38;5;208m-------------------------- < Listos > -------------------------\033[0m')
+        imprimir_en_posicion(2, 0, '>ID\t>TME\t>TT')
+        imprimir_en_posicion(19, 35, f' < Contador: {contador} >')  #Muestra el contador
+        fila_b = 3
+        for element in grupito:       #Actualiza la actual cola
+            imprimir_en_posicion(fila_b, 0,f' {element.process_id}\t  {element.time}\t  {element.time_run}\t  {element.size}')
+            fila_b += 1
+        imprimir_en_posicion(16, 0, '-\033[33m-------------------- < Proceso en Ejecución > -----------------\033[0m')
+        imprimir_en_posicion(17, 0, f'                                       ')
+        imprimir_en_posicion(18, 0, f'-ID: {ejecucion.process_id}')
+        imprimir_en_posicion(19, 0, f'-Operacion-> {ejecucion.opString}')
+        imprimir_en_posicion(20, 0, f'-Tiempo MXE: {ejecucion.time}')
+        imprimir_en_posicion(21, 0, f'-Tiempo TRA: {ejecucion.time_run}            ')
+        imprimir_en_posicion(22, 0, '                 ')  #Limpia antes de mostrar
+        imprimir_en_posicion(22, 0, f'-Tiempo RES: {ejecucion.time-ejecucion.time_run}        ')
+        imprimir_en_posicion(24, 1, '\033[32m---------------------------------------------------- < Terminados > ----------------------------------------------------\033[0m')
+        imprimir_en_posicion(25, 1, '>ID\t\t>Operacion\t\t\t>Resultado\tTL\tTF\tTR\tTRES\tTE\tTS\tSize')
+        fila_term_b = 26       
+        for terminados in lis:   #Muestra cada uno de los procesos terminados
+            idString = resize_string(' ' + str(terminados.process_id),18)
+            operationString = resize_string(terminados.opString,32)
+            resultString = resize_string(' ' + str(terminados.result),14)
+            time_arrival = resize_string(' ' + str(terminados.time_arrival),7)
+            completion_time = resize_string(' ' + str(terminados.completion_time),8)
+            return_time = resize_string(' ' + str(terminados.return_time),8)
+            response_time = resize_string(' ' + str(terminados.response_time),8)
+            wait_time = resize_string(' ' + str(terminados.wait_time),8)
+            time_run = resize_string(' ' + str(terminados.time_run),8)
+            size = resize_string(' ' + str(terminados.size),8)
+            imprimir_en_posicion(fila_term_b, 1, f'{idString}{operationString}{resultString}{time_arrival}{completion_time}{return_time}{response_time}{wait_time}{time_run}{size}')
+            fila_term_b += 1
+        pausa.set()   #Despausa los subprocesos
+        imprimir_en_posicion(2, 35, f'\t\t< CONTINUANDO >')  #Muestra el contador
+        #imprimir_en_posicion(8, 90, '                                       ')  
+
     while count != process:    #Mientras haya procesos pendientes
         #-------------------------------------------------------------------------------
         while (len(grupito) >= 0):               #Se muestra cada elemento del grupo
@@ -401,14 +392,14 @@ def console(elementos,quantum):
                 key_n = False
             while True: #Agrega procesos a la memoria 
                 if len(elementos) != 0: #Si hay elementos en nuevos
-                   initial = elementos.pop(0)
-                   band = ocuparMemoria(initial.size,initial.process_id,"\033[94;1mLis\033[0m") #Se asigna memoria al proceso
-                   if band == True:
-                       initial.time_arrival = contador  #Tiempo de llegada de los primeros 5 procesos 
-                       grupito.append(initial)   
-                   else: #Si el proceso no cabe en memoria, regresa a nuevos
-                       elementos.insert(0,initial)
-                       break         
+                    initial = elementos.pop(0)
+                    band = ocuparMemoria(initial.size,initial.process_id,"\033[94;1mLis\033[0m") #Se asigna memoria al proceso
+                    if band == True:
+                        initial.time_arrival = contador  #Tiempo de llegada de los primeros 5 procesos 
+                        grupito.append(initial)   
+                    else: #Si el proceso no cabe en memoria, regresa a nuevos
+                        elementos.insert(0,initial)
+                        break         
                 else:
                     break
             new = len(elementos)
@@ -453,7 +444,6 @@ def console(elementos,quantum):
                     paginacion()
                 if key_n == True:
                     tecla_n()
-                   
                     #imprimir_en_posicion(10, 90, f'\t\t{new_process.process_id}')
                     key_n = False
                 continue
@@ -469,7 +459,7 @@ def console(elementos,quantum):
                 if ejecucion.band_response == False:
                     ejecucion.response_time = (contador-ejecucion.time_arrival) #Tiempo de respuesta 
                     ejecucion.band_response = True
-    
+
             for i in range(3,16): #Limpia las filas 3-16
                 imprimir_en_posicion(i, 0, f' '*40) 
             fila = 3
@@ -596,12 +586,7 @@ def console(elementos,quantum):
                 imprimir_en_posicion(24, 1, '\033[32m---------------------------------------------------- < Terminados > ----------------------------------------------------\033[0m')
                 imprimir_en_posicion(25, 1, '>ID\t\t>Operacion\t\t\t>Resultado\tTL\tTF\tTR\tTRES\tTE\tTS\tSize')
                 count += 1
-               # if len(elementos) != 0:  #Añade nuevos procesos a memoria 
-                #    next = elementos[0]
-                 #   band = ocuparMemoria(next.size,next.process_id,"Lis")
-                  #  if band == True:
-                   #     elementos.pop(0)
-                    #   grupito.append(next)
+
                 if new != 0:
                     new -= 1
                 fila_term = 26
@@ -680,7 +665,6 @@ def main():
     for count_process in range(1,process+1):
         listProcess.append(Process(count_process))
     
- 
     for i in listProcess:
         print(i.print())
     #input('Press enter')

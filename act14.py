@@ -493,7 +493,6 @@ def console(elementos,quantum):
                     #imprimir_en_posicion(8, 90, '                                       ')  #Limpia antes de mostrar
                     key_p = False
                 if key_n == True:
-                      
                     process +=1
                     new_process = (Process(process)) #Crea un nuevo proceso 
                     new_process.time_arrival = contador     
@@ -515,7 +514,6 @@ def console(elementos,quantum):
                         imprimir_en_posicion(fila, 0,f' {element.process_id}\t  {element.time}\t  {element.time_run}\t {element.size}')
                         fila += 1   
                     paginacion()
-                   
                     #imprimir_en_posicion(10, 90, f'\t\t{new_process.process_id}')
                     key_n = False
                 if key_b == True:
